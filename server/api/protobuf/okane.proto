@@ -2,13 +2,15 @@ syntax = "proto3";
 
 package okanepb;
 
+option go_package = "/okanepb";
+
 // User messages
 message User {
     string id = 1;
     string name = 2;
     string email = 3;
-    optional string password = 4;
-    optional double balance = 4;
+    string password = 4;
+    double balance = 5;
 }
 
 // CreateUserRequest is used in CreateUser rpc request
@@ -19,7 +21,7 @@ message CreateUserRequest {
 // CreateUserResponse is used in CreateUser returns
 message CreateUserResponse {
     string message = 1;
-    User user_data = 1; 
+    User user_data = 2; 
 }
 
 // GetUserRequest is used in GetUser rpc request
@@ -46,8 +48,8 @@ message GetUserByIDResponse {
 // UpdateUserByIDRequest is used in UpdateUserByID rpc request
 message UpdateUserByIDRequest {
     string id = 1;
-    string name = 3;
     string email = 2;
+    string name = 3;
     string password = 4;
 }
 
