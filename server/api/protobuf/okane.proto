@@ -61,10 +61,19 @@ message DeleteUserByIDResponse {
 
 // Okane User Service
 service OkaneUser {
+    // Create User creates a new User
     rpc CreateUser(CreateUserRequest) returns (CreateUserResponse) {};
+    
+    // Get User returns all the existing users list
     rpc GetUser(GetUserRequest) returns (GetUserResponse) {};
+
+    // Get User By ID returns the user with provided ID
     rpc GetUserByID(GetUserByIDRequest) returns (GetUserByIDResponse) {};
+
+    // Update User By ID updates the user with provided ID
     rpc UpdateUserByID(UpdateUserByIDRequest) returns (UpdateUserByIDResponse) {};
+    
+    // Delete User By ID deletes the user with provided ID
     rpc DeleteUserByID(DeleteUserByIDRequest) returns (DeleteUserByIDResponse) {};
 }
 
