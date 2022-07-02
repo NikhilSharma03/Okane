@@ -1,0 +1,81 @@
+syntax = "proto3";
+
+package okanepb;
+
+// User messages
+message User {
+    string id = 1;
+    string name = 2;
+    string email = 3;
+    optional string password = 4;
+    double balance = 4;
+}
+
+message CreateUserRequest {
+    User user_data = 1; 
+}
+
+message CreateUserResponse {
+    string message = 1;
+    User user_data = 1; 
+}
+
+message GetUserRequest {}
+
+message GetUserResponse {
+    string message = 1;
+    repeated User users_data = 2; 
+}
+
+message GetUserByIDRequest {
+    string id = 1;
+    string email = 2;
+}
+
+message GetUserByIDResponse {
+    string message = 1;
+    User user_data = 2; 
+}
+
+message UpdateUserByIDRequest {
+    string id = 1;
+    string name = 3;
+    string email = 2;
+    string password = 4;
+}
+
+message UpdateUserByIDResponse {
+    string message = 1;
+    User user_data = 2; 
+}
+
+message DeleteUserByIDRequest {
+    string id = 1;
+    string email = 2;
+}
+
+message DeleteUserByIDResponse {
+    string message = 1;
+    User user_data = 2; 
+}
+
+// Okane User Service
+service OkaneUser {
+    rpc CreateUser(CreateUserRequest) returns (CreateUserResponse) {};
+    rpc GetUser(GetUserRequest) returns (GetUserResponse) {};
+    rpc GetUserByID(GetUserByIDRequest) returns (GetUserByIDResponse) {};
+    rpc UpdateUserByID(UpdateUserByIDRequest) returns (UpdateUserByIDResponse) {};
+    rpc DeleteUserByID(DeleteUserByIDRequest) returns (DeleteUserByIDResponse) {};
+}
+
+
+// Expense messages
+message Expense {
+    enum EXPENSE_TYPE {
+        CREDIT = 0;
+        DEBIT = 1;
+    }
+    string description = 1;
+    double amount = 2;
+    EXPENSE_TYPE type = 3;
+}
