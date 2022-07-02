@@ -11,32 +11,39 @@ message User {
     optional double balance = 4;
 }
 
+// CreateUserRequest is used in CreateUser rpc request
 message CreateUserRequest {
     User user_data = 1; 
 }
 
+// CreateUserResponse is used in CreateUser returns
 message CreateUserResponse {
     string message = 1;
     User user_data = 1; 
 }
 
+// GetUserRequest is used in GetUser rpc request
 message GetUserRequest {}
 
+// GetUserResponse is used in GetUser returns
 message GetUserResponse {
     string message = 1;
     repeated User users_data = 2; 
 }
 
+// GetUserByIDRequest is used in GetUserByID rpc request
 message GetUserByIDRequest {
     string id = 1;
     string email = 2;
 }
 
+// GetUserByIDResponse is used in GetUserByID returns
 message GetUserByIDResponse {
     string message = 1;
     User user_data = 2; 
 }
 
+// UpdateUserByIDRequest is used in UpdateUserByID rpc request
 message UpdateUserByIDRequest {
     string id = 1;
     string name = 3;
@@ -44,16 +51,19 @@ message UpdateUserByIDRequest {
     string password = 4;
 }
 
+// UpdateUserByIDResponse is used in UpdateUserByID returns
 message UpdateUserByIDResponse {
     string message = 1;
     User user_data = 2; 
 }
 
+// DeleteUserByIDRequest is used in DeleteUserByID rpc request
 message DeleteUserByIDRequest {
     string id = 1;
     string email = 2;
 }
 
+// DeleteUserByIDResponse is used in DeleteUserByID returns
 message DeleteUserByIDResponse {
     string message = 1;
     User user_data = 2; 
@@ -84,7 +94,83 @@ message Expense {
         CREDIT = 0;
         DEBIT = 1;
     }
-    string description = 1;
-    double amount = 2;
-    EXPENSE_TYPE type = 3;
+    string id = 1;
+    string user_id = 2;
+    string title = 3;
+    string description = 4;
+    double amount = 5;
+    EXPENSE_TYPE type = 6;
+}
+
+// CreateExpenseRequest is used in CreateExpense rpc request
+message CreateExpenseRequest {
+    Expense expense_data = 1; 
+}
+
+// CreateExpenseResponse is used in CreateExpense returns
+message CreateExpenseResponse {
+    string message = 1;
+    Expense expense_data = 2; 
+}
+
+// GetExpenseRequest is used in GetExpense rpc request
+message GetExpenseRequest {
+    string user_id = 1;
+}
+
+// GetExpenseResponse is used in GetExpense returns
+message GetExpenseResponse {
+    string message = 1;
+    repeated Expense expenses_data = 2; 
+}
+
+// GetExpenseByIDRequest is used in GetExpenseByID rpc request
+message GetExpenseByIDRequest {
+    string id = 1;
+}
+
+// GetExpenseByIDResponse is used in GetExpenseByID returns
+message GetExpenseByIDResponse {
+    string message = 1;
+    Expense expenses_data = 2; 
+}
+
+// UpdateExpenseByIDRequest is used in UpdateExpenseByID rpc request
+message UpdateExpenseByIDRequest {
+    Expense expense_data = 1;
+}
+
+// UpdateExpenseByIDResponse is used in UpdateExpenseByID returns
+message UpdateExpenseByIDResponse {
+    string message = 1;
+    Expense expense_data = 2; 
+}
+
+// DeleteExpenseByIDRequest is used in DeleteExpenseByID rpc request
+message DeleteExpenseByIDRequest {
+    string id = 1;
+}
+
+// DeleteExpenseByIDResponse is used in DeleteExpenseByID returns
+message DeleteExpenseByIDResponse {
+    string message = 1;
+    Expense expense_data = 2; 
+}
+
+// Okane Expense Service
+service OkaneExpense {
+    // Create Expense creates a new Expense
+    rpc CreateExpense(CreateExpenseRequest) returns (CreateExpenseResponse) {};
+
+    // Get Expense returns all the expenses by the provided user id
+    rpc GetExpense(GetExpenseRequest) returns (GetExpenseResponse);
+
+    // Get Expense By ID returns the expense by the provided expense id
+    rpc GetExpenseByID(GetExpenseByIDRequest) returns (GetExpenseByIDResponse);
+
+    // Update Expense updates the expense by the provided expense id
+    rpc UpdateExpenseByID(UpdateExpenseByIDRequest) returns (UpdateExpenseByIDResponse);
+
+    // Delete Expense deletes the expense by the provided expense id
+    rpc DeleteExpenseByID(DeleteExpenseByIDRequest) returns (DeleteExpenseByIDResponse);
 }
