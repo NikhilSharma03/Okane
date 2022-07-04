@@ -1,5 +1,9 @@
 package datastruct
 
+import (
+	"encoding/json"
+)
+
 type User struct {
 	ID       string  `json:"id"`
 	Name     string  `json:"name"`
@@ -16,4 +20,16 @@ func NewUser(Id, name, email, password string, balance float64) *User {
 		Password: password,
 		Balance:  balance,
 	}
+}
+
+func (user *User) ToJSON() (string, error) {
+	uBytes, err := json.Marshal(user)
+	if err != nil {
+		return "", err
+	}
+	return string(uBytes), nil
+}
+
+func (user *User) Unmarshal(data string) error {
+	return json.Unmarshal([]byte(data), user)
 }
