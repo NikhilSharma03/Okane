@@ -2,13 +2,27 @@ package repository
 
 import "github.com/go-redis/redis/v8"
 
-// The dao struct implement the DAO interface
-type dao struct {
+// DAO interface
+type DAO interface {
+	NewUserCollection() UserCollection
+	NewExpenseCollection() ExpenseCollection
 }
 
-func NewDAO(db *redis.Client) *dao {
+// The dao struct implement the DAO interface
+type dao struct{}
+
+// The NewDAO function returns a dao struct which implement DAO interface
+func NewDAO(db *redis.Client) DAO {
 	DB = db
 	return &dao{}
+}
+
+func (*dao) NewUserCollection() UserCollection {
+	return &userCollection{}
+}
+
+func (*dao) NewExpenseCollection() ExpenseCollection {
+	return &expenseCollection{}
 }
 
 // The DB variable will contain the database client
