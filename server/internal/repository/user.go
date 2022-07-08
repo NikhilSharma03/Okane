@@ -5,7 +5,7 @@ import (
 	"fmt"
 
 	"github.com/NikhilSharma03/Okane/server/internal/datastruct"
-	"github.com/gomodule/redigo/redis"
+	"github.com/go-redis/redis/v8"
 	"github.com/google/uuid"
 	"golang.org/x/crypto/bcrypt"
 )
@@ -64,7 +64,7 @@ func (*userCollection) GetUserByID(id, password string) (*datastruct.User, error
 	// Fetch user from database
 	data, err := DB.HGet(context.Background(), USERS_COLLECTION, USERS+id).Result()
 	if err != nil {
-		if err == redis.ErrNil {
+		if err == redis.Nil {
 			return nil, fmt.Errorf("No user found with provided ID")
 		}
 		return nil, fmt.Errorf("Failed to fetch user")
@@ -88,7 +88,46 @@ func (*userCollection) GetUserByID(id, password string) (*datastruct.User, error
 }
 
 func (*userCollection) UpdateUserByID(id, password, name string) (*datastruct.User, error) {
+	// Fetch user from database
+	data, err := DB.HGet(context.Background(), USERS_COLLECTION, USERS+id).Result()
+	if err != nil {
+		if err == redis.Nil {
+			return nil, fmt.Errorf("No user found with provided ID")
+		}
+		return nil, fmt.Errorf("Failed to fetch user")
+	}
 
+	// Unmarshal the found string data to User struct
+	var foundUser datastruct.User
+	err = foundUser.Unmarshal(data)
+	if err != nil {
+		return nil, fmt.Errorf("Failed to unmarshal found user")
+	}
+
+	// Check if provided password is correct
+	isPassCorrect := bcrypt.CompareHashAndPassword([]byte(foundUser.Password), []byte(password))
+	if isPassCorrect != nil {
+		return nil, fmt.Errorf("Incorrect Password")
+	}
+
+	// Update user name
+	foundUser.Name = name
+
+	// Update user in the DB
+	// Marshalling found User to JSON
+	updatedUser, err := foundUser.ToJSON()
+	if err != nil {
+		return nil, fmt.Errorf("Failed to marshal new user")
+	}
+
+	// Storing in redis Hash
+	_, err = DB.HSet(context.Background(), USERS_COLLECTION, USERS+id, updatedUser).Result()
+	if err != nil {
+		return nil, fmt.Errorf("Failed to store updated user in redis hash")
+	}
+
+	// If all correct return the found user
+	return &foundUser, nil
 }
 
 func (*userCollection) DeleteUserByID(id, password string) (*datastruct.User, error) {
