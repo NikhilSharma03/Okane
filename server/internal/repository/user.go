@@ -13,9 +13,9 @@ import (
 // The UserCollection defines the methods a struct need to have
 type UserCollection interface {
 	CreateUser(name, email, password string) (*datastruct.User, error)
-	GetUserByEmail(id, password string) (*datastruct.User, error)
-	UpdateUserByEmail(id, password, name string) (*datastruct.User, error)
-	DeleteUserByEmail(id, password string) (*datastruct.User, error)
+	GetUserByID(id, password string) (*datastruct.User, error)
+	UpdateUserByID(id, password, name string) (*datastruct.User, error)
+	DeleteUserByID(id, password string) (*datastruct.User, error)
 }
 
 // User Database constants
