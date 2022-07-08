@@ -5,6 +5,7 @@ import (
 	"fmt"
 
 	"github.com/NikhilSharma03/Okane/server/internal/datastruct"
+	"github.com/gomodule/redigo/redis"
 	"github.com/google/uuid"
 	"golang.org/x/crypto/bcrypt"
 )
@@ -12,14 +13,16 @@ import (
 // The UserCollection defines the methods a struct need to have
 type UserCollection interface {
 	CreateUser(name, email, password string) (*datastruct.User, error)
-	GetUser() ([]*datastruct.User, error)
-	GetUserByID(id, email string) (*datastruct.User, error)
-	UpdateUserByID(id, email, name, password string) (*datastruct.User, error)
-	DeleteUserByID(id, email string) (*datastruct.User, error)
+	GetUserByEmail(id, password string) (*datastruct.User, error)
+	UpdateUserByEmail(id, password, name string) (*datastruct.User, error)
+	DeleteUserByEmail(id, password string) (*datastruct.User, error)
 }
 
 // User Database constants
-const USERS = "users:"
+const (
+	USERS_COLLECTION = "users"
+	USERS            = "users:"
+)
 
 // The userCollection struct implements method as defined in UserCollection interface
 type userCollection struct{}
@@ -48,7 +51,7 @@ func (*userCollection) CreateUser(name, email, password string) (*datastruct.Use
 	}
 
 	// Storing in redis Hash
-	_, err = DB.HSet(context.Background(), USERS+id, newUserJSON).Result()
+	_, err = DB.HSet(context.Background(), USERS_COLLECTION, USERS+id, newUserJSON).Result()
 	if err != nil {
 		return nil, fmt.Errorf("Failed to store new user in redis hash")
 	}
@@ -57,18 +60,37 @@ func (*userCollection) CreateUser(name, email, password string) (*datastruct.Use
 	return newUser, nil
 }
 
-func (*userCollection) GetUser() ([]*datastruct.User, error) {
+func (*userCollection) GetUserByID(id, password string) (*datastruct.User, error) {
+	// Fetch user from database
+	data, err := DB.HGet(context.Background(), USERS_COLLECTION, USERS+id).Result()
+	if err != nil {
+		if err == redis.ErrNil {
+			return nil, fmt.Errorf("No user found with provided ID")
+		}
+		return nil, fmt.Errorf("Failed to fetch user")
+	}
+
+	// Unmarshal the found string data to User struct
+	var foundUser datastruct.User
+	err = foundUser.Unmarshal(data)
+	if err != nil {
+		return nil, fmt.Errorf("Failed to unmarshal found user")
+	}
+
+	// Check if provided password is correct
+	isPassCorrect := bcrypt.CompareHashAndPassword([]byte(foundUser.Password), []byte(password))
+	if isPassCorrect != nil {
+		return nil, fmt.Errorf("Incorrect Password")
+	}
+
+	// If all correct return the found user
+	return &foundUser, nil
+}
+
+func (*userCollection) UpdateUserByID(id, password, name string) (*datastruct.User, error) {
 
 }
 
-func (*userCollection) GetUserByID(id, email string) (*datastruct.User, error) {
-
-}
-
-func (*userCollection) UpdateUserByID(id, email, name, password string) (*datastruct.User, error) {
-
-}
-
-func (*userCollection) DeleteUserByID(id, email string) (*datastruct.User, error) {
+func (*userCollection) DeleteUserByID(id, password string) (*datastruct.User, error) {
 
 }
