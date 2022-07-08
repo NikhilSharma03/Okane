@@ -109,4 +109,28 @@ func (us *userService) UpdateUserByID(id, password, name string) (*datastruct.Us
 	return user, nil
 }
 
-func (us *userService) DeleteUserByID(id, password string) (*datastruct.User, error) {}
+func (us *userService) DeleteUserByID(id, password string) (*datastruct.User, error) {
+	us.lg.Println("DeleteUserByID called...")
+	// Fetch user by id (if exists)
+	foundUser, err := us.dao.NewUserCollection().GetUserByID(id)
+	if err != nil {
+		us.lg.Printf("%+v", err.Error())
+		return nil, fmt.Errorf("%+v", err.Error())
+	}
+
+	// Check if provided password is correct
+	isPassCorrect := bcrypt.CompareHashAndPassword([]byte(foundUser.Password), []byte(password))
+	if isPassCorrect != nil {
+		us.lg.Printf("Incorrect password")
+		return nil, fmt.Errorf("incorrect Password")
+	}
+
+	// Delete User in DB
+	err = us.dao.NewUserCollection().DeleteUserByID(foundUser.ID)
+	if err != nil {
+		us.lg.Printf("Failed to delete user")
+		return nil, fmt.Errorf("failed to delete user")
+	}
+
+	return foundUser, nil
+}

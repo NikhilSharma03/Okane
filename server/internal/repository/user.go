@@ -6,14 +6,13 @@ import (
 
 	"github.com/NikhilSharma03/Okane/server/internal/datastruct"
 	"github.com/go-redis/redis/v8"
-	"golang.org/x/crypto/bcrypt"
 )
 
 // The UserCollection defines the methods a struct need to have
 type UserCollection interface {
 	CreateUser(id, name, email, password string) (*datastruct.User, error)
 	GetUserByID(id string) (*datastruct.User, error)
-	DeleteUserByID(id, password string) (*datastruct.User, error)
+	DeleteUserByID(id string) error
 }
 
 // User Database constants
@@ -67,33 +66,12 @@ func (*userCollection) GetUserByID(id string) (*datastruct.User, error) {
 	return &foundUser, nil
 }
 
-func (*userCollection) DeleteUserByID(id, password string) (*datastruct.User, error) {
-	// Fetch user from database
-	data, err := DB.HGet(context.Background(), USERS_COLLECTION, USERS+id).Result()
-	if err != nil {
-		if err == redis.Nil {
-			return nil, fmt.Errorf("no user found with provided ID")
-		}
-		return nil, fmt.Errorf("failed to fetch user")
-	}
-	// Unmarshal the found string data to User struct
-	var foundUser datastruct.User
-	err = foundUser.Unmarshal(data)
-	if err != nil {
-		return nil, fmt.Errorf("failed to unmarshal found user")
-	}
-
-	// Check if provided password is correct
-	isPassCorrect := bcrypt.CompareHashAndPassword([]byte(foundUser.Password), []byte(password))
-	if isPassCorrect != nil {
-		return nil, fmt.Errorf("incorrect Password")
-	}
-
+func (*userCollection) DeleteUserByID(id string) error {
 	// Remove user from DB
-	_, err = DB.HDel(context.Background(), USERS_COLLECTION, USERS+id).Result()
+	_, err := DB.HDel(context.Background(), USERS_COLLECTION, USERS+id).Result()
 	if err != nil {
-		return nil, fmt.Errorf("failed to remove user")
+		return fmt.Errorf("failed to remove user")
 	}
 
-	return &foundUser, nil
+	return nil
 }
