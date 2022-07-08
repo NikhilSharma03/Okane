@@ -64,12 +64,6 @@ func (*userCollection) GetUserByID(id, password string) (*datastruct.User, error
 		return nil, fmt.Errorf("failed to unmarshal found user")
 	}
 
-	// Check if provided password is correct
-	isPassCorrect := bcrypt.CompareHashAndPassword([]byte(foundUser.Password), []byte(password))
-	if isPassCorrect != nil {
-		return nil, fmt.Errorf("incorrect Password")
-	}
-
 	// If all correct return the found user
 	return &foundUser, nil
 }

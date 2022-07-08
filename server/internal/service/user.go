@@ -50,13 +50,32 @@ func (us *userService) CreateUser(name, email, password string) (*datastruct.Use
 	// create user
 	user, err := us.dao.NewUserCollection().CreateUser(id, name, email, string(hpassword))
 	if err != nil {
-		us.lg.Printf("Failed to create user %v", err.Error())
+		us.lg.Printf("Failed to create user")
 		return nil, fmt.Errorf("failed to create user")
 	}
 
 	return user, nil
 }
 
-func (us *userService) GetUserByID(id, password string) (*datastruct.User, error)          {}
+func (us *userService) GetUserByID(id, password string) (*datastruct.User, error) {
+	// Log
+	us.lg.Println("GetUserByID called...")
+
+	// Fetch user by id
+	user, err := us.dao.NewUserCollection().GetUserByID(id, password)
+	if err != nil {
+		us.lg.Printf("%+v", err.Error())
+		return nil, fmt.Errorf("%+v", err.Error())
+	}
+
+	// Check if provided password is correct
+	isPassCorrect := bcrypt.CompareHashAndPassword([]byte(user.Password), []byte(password))
+	if isPassCorrect != nil {
+		us.lg.Printf("Incorrect password")
+		return nil, fmt.Errorf("incorrect Password")
+	}
+
+	return user, nil
+}
 func (us *userService) UpdateUserByID(id, password, name string) (*datastruct.User, error) {}
 func (us *userService) DeleteUserByID(id, password string) (*datastruct.User, error)       {}
