@@ -62,7 +62,7 @@ func (us *userService) GetUserByID(id, password string) (*datastruct.User, error
 	us.lg.Println("GetUserByID called...")
 
 	// Fetch user by id
-	user, err := us.dao.NewUserCollection().GetUserByID(id, password)
+	user, err := us.dao.NewUserCollection().GetUserByID(id)
 	if err != nil {
 		us.lg.Printf("%+v", err.Error())
 		return nil, fmt.Errorf("%+v", err.Error())
@@ -77,5 +77,36 @@ func (us *userService) GetUserByID(id, password string) (*datastruct.User, error
 
 	return user, nil
 }
-func (us *userService) UpdateUserByID(id, password, name string) (*datastruct.User, error) {}
-func (us *userService) DeleteUserByID(id, password string) (*datastruct.User, error)       {}
+
+func (us *userService) UpdateUserByID(id, password, name string) (*datastruct.User, error) {
+	// Log
+	us.lg.Println("UpdateUserByID called...")
+
+	// Fetch user by id (if exists)
+	foundUser, err := us.dao.NewUserCollection().GetUserByID(id)
+	if err != nil {
+		us.lg.Printf("%+v", err.Error())
+		return nil, fmt.Errorf("%+v", err.Error())
+	}
+
+	// Check if provided password is correct
+	isPassCorrect := bcrypt.CompareHashAndPassword([]byte(foundUser.Password), []byte(password))
+	if isPassCorrect != nil {
+		us.lg.Printf("Incorrect password")
+		return nil, fmt.Errorf("incorrect Password")
+	}
+
+	// Update user name
+	foundUser.Name = name
+
+	// Update User in DB
+	user, err := us.dao.NewUserCollection().CreateUser(foundUser.ID, foundUser.Name, foundUser.Email, foundUser.Password)
+	if err != nil {
+		us.lg.Printf("Failed to update user")
+		return nil, fmt.Errorf("failed to update user")
+	}
+
+	return user, nil
+}
+
+func (us *userService) DeleteUserByID(id, password string) (*datastruct.User, error) {}
