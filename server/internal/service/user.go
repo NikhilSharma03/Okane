@@ -1,10 +1,13 @@
 package service
 
 import (
+	"fmt"
 	"log"
 
 	"github.com/NikhilSharma03/Okane/server/internal/datastruct"
 	"github.com/NikhilSharma03/Okane/server/internal/repository"
+	"github.com/google/uuid"
+	"golang.org/x/crypto/bcrypt"
 )
 
 // The UserService interface defines methods to implement
@@ -26,7 +29,34 @@ func NewUserService(dao repository.DAO, lg *log.Logger) UserService {
 	return &userService{dao, lg}
 }
 
-func (us *userService) CreateUser(name, email, password string) (*datastruct.User, error)  {}
+func (us *userService) CreateUser(name, email, password string) (*datastruct.User, error) {
+	// Log
+	us.lg.Println("CreateUser called...")
+
+	// Generating new ID for user
+	id := uuid.New().String()
+	if id == "" {
+		us.lg.Printf("Failed to generate id")
+		return nil, fmt.Errorf("failed to generate user ID")
+	}
+
+	// Hashing the user password
+	hpassword, err := bcrypt.GenerateFromPassword([]byte(password), 14)
+	if err != nil {
+		us.lg.Printf("Failed to hash user password %v", err.Error())
+		return nil, fmt.Errorf("failed to hash user password")
+	}
+
+	// create user
+	user, err := us.dao.NewUserCollection().CreateUser(id, name, email, string(hpassword))
+	if err != nil {
+		us.lg.Printf("Failed to create user %v", err.Error())
+		return nil, fmt.Errorf("failed to create user")
+	}
+
+	return user, nil
+}
+
 func (us *userService) GetUserByID(id, password string) (*datastruct.User, error)          {}
 func (us *userService) UpdateUserByID(id, password, name string) (*datastruct.User, error) {}
 func (us *userService) DeleteUserByID(id, password string) (*datastruct.User, error)       {}

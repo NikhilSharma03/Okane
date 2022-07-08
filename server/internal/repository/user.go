@@ -6,13 +6,12 @@ import (
 
 	"github.com/NikhilSharma03/Okane/server/internal/datastruct"
 	"github.com/go-redis/redis/v8"
-	"github.com/google/uuid"
 	"golang.org/x/crypto/bcrypt"
 )
 
 // The UserCollection defines the methods a struct need to have
 type UserCollection interface {
-	CreateUser(name, email, password string) (*datastruct.User, error)
+	CreateUser(id, name, email, password string) (*datastruct.User, error)
 	GetUserByID(id, password string) (*datastruct.User, error)
 	UpdateUserByID(id, password, name string) (*datastruct.User, error)
 	DeleteUserByID(id, password string) (*datastruct.User, error)
@@ -27,21 +26,9 @@ const (
 // The userCollection struct implements method as defined in UserCollection interface
 type userCollection struct{}
 
-func (*userCollection) CreateUser(name, email, password string) (*datastruct.User, error) {
-	// Generating new ID for user
-	id := uuid.New().String()
-	if id == "" {
-		return nil, fmt.Errorf("failed to generate user ID")
-	}
-
-	// Hashing the user password
-	hpassword, err := bcrypt.GenerateFromPassword([]byte(password), 14)
-	if err != nil {
-		return nil, fmt.Errorf("failed to hash user password")
-	}
-
+func (*userCollection) CreateUser(id, name, email, password string) (*datastruct.User, error) {
 	// Create new User
-	newUser := datastruct.NewUser(id, name, email, string(hpassword), 0)
+	newUser := datastruct.NewUser(id, name, email, password, 0)
 
 	// Store user in hash database
 	// Marshalling newUser to JSON
