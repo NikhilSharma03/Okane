@@ -131,5 +131,32 @@ func (*userCollection) UpdateUserByID(id, password, name string) (*datastruct.Us
 }
 
 func (*userCollection) DeleteUserByID(id, password string) (*datastruct.User, error) {
+	// Fetch user from database
+	data, err := DB.HGet(context.Background(), USERS_COLLECTION, USERS+id).Result()
+	if err != nil {
+		if err == redis.Nil {
+			return nil, fmt.Errorf("No user found with provided ID")
+		}
+		return nil, fmt.Errorf("Failed to fetch user")
+	}
+	// Unmarshal the found string data to User struct
+	var foundUser datastruct.User
+	err = foundUser.Unmarshal(data)
+	if err != nil {
+		return nil, fmt.Errorf("Failed to unmarshal found user")
+	}
 
+	// Check if provided password is correct
+	isPassCorrect := bcrypt.CompareHashAndPassword([]byte(foundUser.Password), []byte(password))
+	if isPassCorrect != nil {
+		return nil, fmt.Errorf("Incorrect Password")
+	}
+
+	// Remove user from DB
+	_, err = DB.HDel(context.Background(), USERS_COLLECTION, USERS+id).Result()
+	if err != nil {
+		return nil, fmt.Errorf("Failed to remove user")
+	}
+
+	return &foundUser, nil
 }
