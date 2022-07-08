@@ -31,13 +31,13 @@ func (*userCollection) CreateUser(name, email, password string) (*datastruct.Use
 	// Generating new ID for user
 	id := uuid.New().String()
 	if id == "" {
-		return nil, fmt.Errorf("Failed to generate user ID")
+		return nil, fmt.Errorf("failed to generate user ID")
 	}
 
 	// Hashing the user password
 	hpassword, err := bcrypt.GenerateFromPassword([]byte(password), 14)
 	if err != nil {
-		return nil, fmt.Errorf("Failed to hash user password")
+		return nil, fmt.Errorf("failed to hash user password")
 	}
 
 	// Create new User
@@ -47,13 +47,13 @@ func (*userCollection) CreateUser(name, email, password string) (*datastruct.Use
 	// Marshalling newUser to JSON
 	newUserJSON, err := newUser.ToJSON()
 	if err != nil {
-		return nil, fmt.Errorf("Failed to marshal new user")
+		return nil, fmt.Errorf("failed to marshal new user")
 	}
 
 	// Storing in redis Hash
 	_, err = DB.HSet(context.Background(), USERS_COLLECTION, USERS+id, newUserJSON).Result()
 	if err != nil {
-		return nil, fmt.Errorf("Failed to store new user in redis hash")
+		return nil, fmt.Errorf("failed to store new user in redis hash")
 	}
 
 	// return created user
@@ -65,22 +65,22 @@ func (*userCollection) GetUserByID(id, password string) (*datastruct.User, error
 	data, err := DB.HGet(context.Background(), USERS_COLLECTION, USERS+id).Result()
 	if err != nil {
 		if err == redis.Nil {
-			return nil, fmt.Errorf("No user found with provided ID")
+			return nil, fmt.Errorf("no user found with provided ID")
 		}
-		return nil, fmt.Errorf("Failed to fetch user")
+		return nil, fmt.Errorf("failed to fetch user")
 	}
 
 	// Unmarshal the found string data to User struct
 	var foundUser datastruct.User
 	err = foundUser.Unmarshal(data)
 	if err != nil {
-		return nil, fmt.Errorf("Failed to unmarshal found user")
+		return nil, fmt.Errorf("failed to unmarshal found user")
 	}
 
 	// Check if provided password is correct
 	isPassCorrect := bcrypt.CompareHashAndPassword([]byte(foundUser.Password), []byte(password))
 	if isPassCorrect != nil {
-		return nil, fmt.Errorf("Incorrect Password")
+		return nil, fmt.Errorf("incorrect Password")
 	}
 
 	// If all correct return the found user
@@ -92,22 +92,22 @@ func (*userCollection) UpdateUserByID(id, password, name string) (*datastruct.Us
 	data, err := DB.HGet(context.Background(), USERS_COLLECTION, USERS+id).Result()
 	if err != nil {
 		if err == redis.Nil {
-			return nil, fmt.Errorf("No user found with provided ID")
+			return nil, fmt.Errorf("no user found with provided ID")
 		}
-		return nil, fmt.Errorf("Failed to fetch user")
+		return nil, fmt.Errorf("failed to fetch user")
 	}
 
 	// Unmarshal the found string data to User struct
 	var foundUser datastruct.User
 	err = foundUser.Unmarshal(data)
 	if err != nil {
-		return nil, fmt.Errorf("Failed to unmarshal found user")
+		return nil, fmt.Errorf("failed to unmarshal found user")
 	}
 
 	// Check if provided password is correct
 	isPassCorrect := bcrypt.CompareHashAndPassword([]byte(foundUser.Password), []byte(password))
 	if isPassCorrect != nil {
-		return nil, fmt.Errorf("Incorrect Password")
+		return nil, fmt.Errorf("incorrect Password")
 	}
 
 	// Update user name
@@ -117,13 +117,13 @@ func (*userCollection) UpdateUserByID(id, password, name string) (*datastruct.Us
 	// Marshalling found User to JSON
 	updatedUser, err := foundUser.ToJSON()
 	if err != nil {
-		return nil, fmt.Errorf("Failed to marshal new user")
+		return nil, fmt.Errorf("failed to marshal new user")
 	}
 
 	// Storing in redis Hash
 	_, err = DB.HSet(context.Background(), USERS_COLLECTION, USERS+id, updatedUser).Result()
 	if err != nil {
-		return nil, fmt.Errorf("Failed to store updated user in redis hash")
+		return nil, fmt.Errorf("failed to store updated user in redis hash")
 	}
 
 	// If all correct return the found user
@@ -135,27 +135,27 @@ func (*userCollection) DeleteUserByID(id, password string) (*datastruct.User, er
 	data, err := DB.HGet(context.Background(), USERS_COLLECTION, USERS+id).Result()
 	if err != nil {
 		if err == redis.Nil {
-			return nil, fmt.Errorf("No user found with provided ID")
+			return nil, fmt.Errorf("no user found with provided ID")
 		}
-		return nil, fmt.Errorf("Failed to fetch user")
+		return nil, fmt.Errorf("failed to fetch user")
 	}
 	// Unmarshal the found string data to User struct
 	var foundUser datastruct.User
 	err = foundUser.Unmarshal(data)
 	if err != nil {
-		return nil, fmt.Errorf("Failed to unmarshal found user")
+		return nil, fmt.Errorf("failed to unmarshal found user")
 	}
 
 	// Check if provided password is correct
 	isPassCorrect := bcrypt.CompareHashAndPassword([]byte(foundUser.Password), []byte(password))
 	if isPassCorrect != nil {
-		return nil, fmt.Errorf("Incorrect Password")
+		return nil, fmt.Errorf("incorrect Password")
 	}
 
 	// Remove user from DB
 	_, err = DB.HDel(context.Background(), USERS_COLLECTION, USERS+id).Result()
 	if err != nil {
-		return nil, fmt.Errorf("Failed to remove user")
+		return nil, fmt.Errorf("failed to remove user")
 	}
 
 	return &foundUser, nil
