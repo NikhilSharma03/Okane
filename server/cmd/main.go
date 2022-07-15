@@ -32,13 +32,16 @@ func main() {
 
 	// Starting gRPC server
 	go func() {
+		// Initialize Listener at Port 8001
 		listener, err := net.Listen("tcp", "localhost:8001")
 		if err != nil {
 			log.Fatalln(err)
 		}
-
+		// Initialize new grpc server
 		grpcServer := grpc.NewServer()
+		// Register server
 		okanepb.RegisterOkaneUserServer(grpcServer, app.NewUserService(userService))
+		// Server grpc server on listener
 		err = grpcServer.Serve(listener)
 		if err != nil {
 			log.Fatalln(err)
