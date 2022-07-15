@@ -187,17 +187,39 @@ message DeleteExpenseByIDResponse {
 // Okane Expense Service
 service OkaneExpense {
     // Create Expense creates a new Expense
-    rpc CreateExpense(CreateExpenseRequest) returns (CreateExpenseResponse) {};
+    rpc CreateExpense(CreateExpenseRequest) returns (CreateExpenseResponse) {
+        option (google.api.http) = {
+            post: "/api/expense"
+            body: "*"
+        };
+    };
 
     // Get Expense returns all the expenses by the provided user id
-    rpc GetExpense(GetExpenseRequest) returns (GetExpenseResponse);
+    rpc GetExpense(GetExpenseRequest) returns (GetExpenseResponse) {
+        option (google.api.http) = {
+            get:"/api/expense"
+        };
+    };
 
     // Get Expense By ID returns the expense by the provided expense id
-    rpc GetExpenseByID(GetExpenseByIDRequest) returns (GetExpenseByIDResponse);
+    rpc GetExpenseByID(GetExpenseByIDRequest) returns (GetExpenseByIDResponse) {
+        option (google.api.http) = {
+            get:"/api/expense/{expenseid}"
+        };
+    };
 
     // Update Expense updates the expense by the provided expense id
-    rpc UpdateExpenseByID(UpdateExpenseByIDRequest) returns (UpdateExpenseByIDResponse);
+    rpc UpdateExpenseByID(UpdateExpenseByIDRequest) returns (UpdateExpenseByIDResponse) {
+        option (google.api.http) = {
+            patch: "/api/expense/{expenseid}"
+            body: "*"
+        };
+    };
 
     // Delete Expense deletes the expense by the provided expense id
-    rpc DeleteExpenseByID(DeleteExpenseByIDRequest) returns (DeleteExpenseByIDResponse);
+    rpc DeleteExpenseByID(DeleteExpenseByIDRequest) returns (DeleteExpenseByIDResponse) {
+        option (google.api.http) = {
+            delete: "/api/expense/{expenseid}"
+        };
+    };
 }
