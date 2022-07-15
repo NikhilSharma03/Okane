@@ -5,6 +5,7 @@ package okanepb;
 option go_package = "github.com/NikhilSharma03/Okane/server/api/protobuf/okane;okanepb";
 
 import "server/api/google/type/money.proto";
+import "server/api/google/api/annotations.proto";
 
 // User messages
 message User {
@@ -76,19 +77,41 @@ message DeleteUserByIDResponse {
 // Okane User Service
 service OkaneUser {
     // Create User creates a new User
-    rpc CreateUser(CreateUserRequest) returns (CreateUserResponse) {};
+    rpc CreateUser(CreateUserRequest) returns (CreateUserResponse) {
+        option (google.api.http) = {
+            post: "/api/user"
+            body: "*"
+        };
+    };
     
     // Get User returns all the existing users list
-    rpc GetUser(GetUserRequest) returns (GetUserResponse) {};
+    rpc GetUser(GetUserRequest) returns (GetUserResponse) {
+        option (google.api.http) = {
+            get:"/api/user"
+        };
+    };
 
     // Get User By ID returns the user with provided ID
-    rpc GetUserByID(GetUserByIDRequest) returns (GetUserByIDResponse) {};
+    rpc GetUserByID(GetUserByIDRequest) returns (GetUserByIDResponse) {
+        option (google.api.http) = {
+            get:"/api/user/{userid}"
+        };
+    };
 
     // Update User By ID updates the user with provided ID
-    rpc UpdateUserByID(UpdateUserByIDRequest) returns (UpdateUserByIDResponse) {};
+    rpc UpdateUserByID(UpdateUserByIDRequest) returns (UpdateUserByIDResponse) {
+        option (google.api.http) = {
+            patch: "/api/user/{userid}"
+            body: "*"
+        };
+    };
     
     // Delete User By ID deletes the user with provided ID
-    rpc DeleteUserByID(DeleteUserByIDRequest) returns (DeleteUserByIDResponse) {};
+    rpc DeleteUserByID(DeleteUserByIDRequest) returns (DeleteUserByIDResponse) {
+        option (google.api.http) = {
+            delete: "/api/user/{userid}"
+        };
+    };
 }
 
 
