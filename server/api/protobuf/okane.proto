@@ -2,7 +2,9 @@ syntax = "proto3";
 
 package okanepb;
 
-option go_package = "/okanepb";
+option go_package = "github.com/NikhilSharma03/Okane/server/api/protobuf/okane;okanepb";
+
+import "server/api/google/type/money.proto";
 
 // User messages
 message User {
@@ -10,7 +12,7 @@ message User {
     string name = 2;
     string email = 3;
     string password = 4;
-    double balance = 5;
+    google.type.Money balance = 5;
 }
 
 // CreateUserRequest is used in CreateUser rpc request
@@ -100,7 +102,7 @@ message Expense {
     string user_id = 2;
     string title = 3;
     string description = 4;
-    double amount = 5;
+    google.type.Money amount = 5;
     EXPENSE_TYPE type = 6;
 }
 

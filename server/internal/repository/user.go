@@ -26,7 +26,9 @@ type userCollection struct{}
 
 func (*userCollection) CreateUser(id, name, email, password string) (*datastruct.User, error) {
 	// Create new User
-	newUser := datastruct.NewUser(id, name, email, password, 0)
+	newUser := datastruct.NewUser(id, name, email, password)
+	newUserBal := datastruct.NewBalance("USD", 0, 0)
+	newUser.Balance = newUserBal
 
 	// Store user in hash database
 	// Marshalling newUser to JSON
