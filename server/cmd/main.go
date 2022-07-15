@@ -6,6 +6,7 @@ import (
 	"os"
 
 	"github.com/NikhilSharma03/Okane/server/internal/repository"
+	"github.com/NikhilSharma03/Okane/server/internal/service"
 )
 
 func main() {
@@ -22,5 +23,7 @@ func main() {
 
 	// Initialize DAO
 	dao := repository.NewDAO(dbClient)
+	// Register all services
+	userService := service.NewUserService(dao, lg)
 
 }
