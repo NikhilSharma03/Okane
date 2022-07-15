@@ -43,7 +43,7 @@ func (us *userService) CreateUser(name, email, password string) (*datastruct.Use
 	// Hashing the user password
 	hpassword, err := bcrypt.GenerateFromPassword([]byte(password), 14)
 	if err != nil {
-		us.lg.Printf("Failed to hash user password %v", err.Error())
+		us.lg.Printf("Failed to hash user password %+v", err.Error())
 		return nil, fmt.Errorf("failed to hash user password")
 	}
 
