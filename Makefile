@@ -9,4 +9,4 @@ gen-protobuf:
 
 # clean-protobuf removes generated .pb.go files
 clean-protobuf:
-	rm -rf server/pkg/okanepb server/pkg/google.golang.org
+	rm -rf server/pkg/protobuf
