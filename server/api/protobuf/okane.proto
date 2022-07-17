@@ -78,14 +78,14 @@ service OkaneUser {
     // Get User By ID returns the user with provided ID
     rpc GetUserByID(GetUserByIDRequest) returns (GetUserByIDResponse) {
         option (google.api.http) = {
-            get:"/api/user/{userid}"
+            get:"/api/user/{id}"
         };
     };
 
     // Update User By ID updates the user with provided ID
     rpc UpdateUserByID(UpdateUserByIDRequest) returns (UpdateUserByIDResponse) {
         option (google.api.http) = {
-            patch: "/api/user/{userid}"
+            patch: "/api/user/{id}"
             body: "*"
         };
     };
@@ -93,7 +93,7 @@ service OkaneUser {
     // Delete User By ID deletes the user with provided ID
     rpc DeleteUserByID(DeleteUserByIDRequest) returns (DeleteUserByIDResponse) {
         option (google.api.http) = {
-            delete: "/api/user/{userid}"
+            delete: "/api/user/{id}"
         };
     };
 }
@@ -148,7 +148,8 @@ message GetExpenseByIDResponse {
 
 // UpdateExpenseByIDRequest is used in UpdateExpenseByID rpc request
 message UpdateExpenseByIDRequest {
-    Expense expense_data = 1;
+    string id = 1;
+    Expense expense_data = 2;
 }
 
 // UpdateExpenseByIDResponse is used in UpdateExpenseByID returns
@@ -181,21 +182,21 @@ service OkaneExpense {
     // Get Expense returns all the expenses by the provided user id
     rpc GetExpense(GetExpenseRequest) returns (GetExpenseResponse) {
         option (google.api.http) = {
-            get:"/api/expense"
+            get:"/api/expense/user/{user_id}"
         };
     };
 
     // Get Expense By ID returns the expense by the provided expense id
     rpc GetExpenseByID(GetExpenseByIDRequest) returns (GetExpenseByIDResponse) {
         option (google.api.http) = {
-            get:"/api/expense/{expenseid}"
+            get:"/api/expense/{id}"
         };
     };
 
     // Update Expense updates the expense by the provided expense id
     rpc UpdateExpenseByID(UpdateExpenseByIDRequest) returns (UpdateExpenseByIDResponse) {
         option (google.api.http) = {
-            patch: "/api/expense/{expenseid}"
+            patch: "/api/expense/{id}"
             body: "*"
         };
     };
@@ -203,7 +204,7 @@ service OkaneExpense {
     // Delete Expense deletes the expense by the provided expense id
     rpc DeleteExpenseByID(DeleteExpenseByIDRequest) returns (DeleteExpenseByIDResponse) {
         option (google.api.http) = {
-            delete: "/api/expense/{expenseid}"
+            delete: "/api/expense/{id}"
         };
     };
 }
