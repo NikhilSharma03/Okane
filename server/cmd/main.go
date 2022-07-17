@@ -9,7 +9,7 @@ import (
 	"github.com/NikhilSharma03/Okane/server/internal/app"
 	"github.com/NikhilSharma03/Okane/server/internal/repository"
 	"github.com/NikhilSharma03/Okane/server/internal/service"
-	okanepb "github.com/NikhilSharma03/Okane/server/pkg/github.com/NikhilSharma03/Okane/server/api/protobuf/okane"
+	okanepb "github.com/NikhilSharma03/Okane/server/pkg/protobuf"
 	"google.golang.org/grpc"
 )
 
