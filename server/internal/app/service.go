@@ -2,7 +2,7 @@ package app
 
 import (
 	"github.com/NikhilSharma03/Okane/server/internal/service"
-	okanepb "github.com/NikhilSharma03/Okane/server/pkg/github.com/NikhilSharma03/Okane/server/api/protobuf/okane"
+	okanepb "github.com/NikhilSharma03/Okane/server/pkg/protobuf"
 )
 
 // The UserService implements handler of okanepb.UserService
