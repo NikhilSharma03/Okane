@@ -5,7 +5,6 @@ go 1.18
 require (
 	github.com/go-redis/redis/v8 v8.11.5
 	github.com/google/uuid v1.3.0
-	github.com/grpc-ecosystem/grpc-gateway v1.16.0
 	github.com/grpc-ecosystem/grpc-gateway/v2 v2.10.3
 	golang.org/x/crypto v0.0.0-20220622213112-05595931fe9d
 	google.golang.org/genproto v0.0.0-20220630174209-ad1d48641aa7
