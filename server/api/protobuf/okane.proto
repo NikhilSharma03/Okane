@@ -27,15 +27,6 @@ message CreateUserResponse {
     User user_data = 2; 
 }
 
-// GetUserRequest is used in GetUser rpc request
-message GetUserRequest {}
-
-// GetUserResponse is used in GetUser returns
-message GetUserResponse {
-    string message = 1;
-    repeated User users_data = 2; 
-}
-
 // GetUserByIDRequest is used in GetUserByID rpc request
 message GetUserByIDRequest {
     string id = 1;
@@ -81,13 +72,6 @@ service OkaneUser {
         option (google.api.http) = {
             post: "/api/user"
             body: "*"
-        };
-    };
-    
-    // Get User returns all the existing users list
-    rpc GetUser(GetUserRequest) returns (GetUserResponse) {
-        option (google.api.http) = {
-            get:"/api/user"
         };
     };
 

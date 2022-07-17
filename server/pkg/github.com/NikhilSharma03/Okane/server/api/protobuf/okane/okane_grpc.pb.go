@@ -24,8 +24,6 @@ const _ = grpc.SupportPackageIsVersion7
 type OkaneUserClient interface {
 	// Create User creates a new User
 	CreateUser(ctx context.Context, in *CreateUserRequest, opts ...grpc.CallOption) (*CreateUserResponse, error)
-	// Get User returns all the existing users list
-	GetUser(ctx context.Context, in *GetUserRequest, opts ...grpc.CallOption) (*GetUserResponse, error)
 	// Get User By ID returns the user with provided ID
 	GetUserByID(ctx context.Context, in *GetUserByIDRequest, opts ...grpc.CallOption) (*GetUserByIDResponse, error)
 	// Update User By ID updates the user with provided ID
@@ -45,15 +43,6 @@ func NewOkaneUserClient(cc grpc.ClientConnInterface) OkaneUserClient {
 func (c *okaneUserClient) CreateUser(ctx context.Context, in *CreateUserRequest, opts ...grpc.CallOption) (*CreateUserResponse, error) {
 	out := new(CreateUserResponse)
 	err := c.cc.Invoke(ctx, "/okanepb.OkaneUser/CreateUser", in, out, opts...)
-	if err != nil {
-		return nil, err
-	}
-	return out, nil
-}
-
-func (c *okaneUserClient) GetUser(ctx context.Context, in *GetUserRequest, opts ...grpc.CallOption) (*GetUserResponse, error) {
-	out := new(GetUserResponse)
-	err := c.cc.Invoke(ctx, "/okanepb.OkaneUser/GetUser", in, out, opts...)
 	if err != nil {
 		return nil, err
 	}
@@ -93,8 +82,6 @@ func (c *okaneUserClient) DeleteUserByID(ctx context.Context, in *DeleteUserByID
 type OkaneUserServer interface {
 	// Create User creates a new User
 	CreateUser(context.Context, *CreateUserRequest) (*CreateUserResponse, error)
-	// Get User returns all the existing users list
-	GetUser(context.Context, *GetUserRequest) (*GetUserResponse, error)
 	// Get User By ID returns the user with provided ID
 	GetUserByID(context.Context, *GetUserByIDRequest) (*GetUserByIDResponse, error)
 	// Update User By ID updates the user with provided ID
@@ -110,9 +97,6 @@ type UnimplementedOkaneUserServer struct {
 
 func (UnimplementedOkaneUserServer) CreateUser(context.Context, *CreateUserRequest) (*CreateUserResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method CreateUser not implemented")
-}
-func (UnimplementedOkaneUserServer) GetUser(context.Context, *GetUserRequest) (*GetUserResponse, error) {
-	return nil, status.Errorf(codes.Unimplemented, "method GetUser not implemented")
 }
 func (UnimplementedOkaneUserServer) GetUserByID(context.Context, *GetUserByIDRequest) (*GetUserByIDResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method GetUserByID not implemented")
@@ -150,24 +134,6 @@ func _OkaneUser_CreateUser_Handler(srv interface{}, ctx context.Context, dec fun
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
 		return srv.(OkaneUserServer).CreateUser(ctx, req.(*CreateUserRequest))
-	}
-	return interceptor(ctx, in, info, handler)
-}
-
-func _OkaneUser_GetUser_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(GetUserRequest)
-	if err := dec(in); err != nil {
-		return nil, err
-	}
-	if interceptor == nil {
-		return srv.(OkaneUserServer).GetUser(ctx, in)
-	}
-	info := &grpc.UnaryServerInfo{
-		Server:     srv,
-		FullMethod: "/okanepb.OkaneUser/GetUser",
-	}
-	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(OkaneUserServer).GetUser(ctx, req.(*GetUserRequest))
 	}
 	return interceptor(ctx, in, info, handler)
 }
@@ -236,10 +202,6 @@ var OkaneUser_ServiceDesc = grpc.ServiceDesc{
 		{
 			MethodName: "CreateUser",
 			Handler:    _OkaneUser_CreateUser_Handler,
-		},
-		{
-			MethodName: "GetUser",
-			Handler:    _OkaneUser_GetUser_Handler,
 		},
 		{
 			MethodName: "GetUserByID",
