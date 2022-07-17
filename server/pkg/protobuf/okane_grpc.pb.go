@@ -2,7 +2,7 @@
 // versions:
 // - protoc-gen-go-grpc v1.2.0
 // - protoc             v3.6.1
-// source: server/api/protobuf/okane.proto
+// source: protobuf/okane.proto
 
 package okanepb
 
@@ -217,7 +217,7 @@ var OkaneUser_ServiceDesc = grpc.ServiceDesc{
 		},
 	},
 	Streams:  []grpc.StreamDesc{},
-	Metadata: "server/api/protobuf/okane.proto",
+	Metadata: "protobuf/okane.proto",
 }
 
 // OkaneExpenseClient is the client API for OkaneExpense service.
@@ -457,5 +457,5 @@ var OkaneExpense_ServiceDesc = grpc.ServiceDesc{
 		},
 	},
 	Streams:  []grpc.StreamDesc{},
-	Metadata: "server/api/protobuf/okane.proto",
+	Metadata: "protobuf/okane.proto",
 }

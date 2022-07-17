@@ -4,8 +4,8 @@ package okanepb;
 
 option go_package = "github.com/NikhilSharma03/Okane/server/api/protobuf/okane;okanepb";
 
-import "server/api/google/type/money.proto";
-import "server/api/google/api/annotations.proto";
+import "google/type/money.proto";
+import "google/api/annotations.proto";
 
 // User messages
 message User {
