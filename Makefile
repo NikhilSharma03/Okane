@@ -4,7 +4,7 @@ gen-protobuf:
 		--go_out ./server/pkg --go_opt paths=source_relative \
   		--go-grpc_out ./server/pkg --go-grpc_opt paths=source_relative \
   	   	--grpc-gateway_out ./server/pkg --grpc-gateway_opt paths=source_relative \
-  		./server/api/protobuf/*.proto
+  		./server/api/protobuf/*.proto ./server/api/google/api/*.proto ./server/api/google/type/*.proto
 
 
 # clean-protobuf removes generated .pb.go files
