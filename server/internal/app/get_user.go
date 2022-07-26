@@ -17,7 +17,7 @@ func (us *UserService) GetUserByID(ctx context.Context, req *okanepb.GetUserByID
 	if !ok {
 		return nil, fmt.Errorf("cred metadata not found in header")
 	}
-	// Check and return user if exists
+	// Check and get user if exists
 	userData, err := us.userService.GetUserByID(userID, userCred)
 	if err != nil {
 		return nil, fmt.Errorf("%v", err)
