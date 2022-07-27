@@ -22,6 +22,11 @@ func (us *UserService) GetUserByID(ctx context.Context, req *okanepb.GetUserByID
 	if err != nil {
 		return nil, fmt.Errorf("%v", err)
 	}
+	// Generate JWT token
+	token, err := us.jwtService.GenerateJWT(userData.ID, userData.Email)
+	if err != nil {
+		return nil, fmt.Errorf("%v", err)
+	}
 
 	return &okanepb.GetUserByIDResponse{
 		Message: "Found User",
@@ -36,5 +41,6 @@ func (us *UserService) GetUserByID(ctx context.Context, req *okanepb.GetUserByID
 				Nanos:        userData.Balance.Nanos,
 			},
 		},
+		Token: token,
 	}, nil
 }

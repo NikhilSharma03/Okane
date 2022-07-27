@@ -32,6 +32,7 @@ func main() {
 	dao := repository.NewDAO(dbClient)
 	// Register all services
 	userService := service.NewUserService(dao, lg)
+	jwtService := service.NewJWTService(lg)
 
 	// Starting gRPC server
 	go func() {
@@ -43,7 +44,7 @@ func main() {
 		// Initialize new grpc server
 		grpcServer := grpc.NewServer()
 		// Register server
-		okanepb.RegisterOkaneUserServer(grpcServer, app.NewUserService(userService))
+		okanepb.RegisterOkaneUserServer(grpcServer, app.NewUserService(userService, jwtService))
 		// Server grpc server on listener
 		err = grpcServer.Serve(listener)
 		if err != nil {
