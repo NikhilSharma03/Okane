@@ -36,7 +36,8 @@ message GetUserByIDRequest {
 // GetUserByIDResponse is used in GetUserByID returns
 message GetUserByIDResponse {
     string message = 1;
-    User user_data = 2; 
+    string token = 2;
+    User user_data = 3; 
 }
 
 // UpdateUserByIDRequest is used in UpdateUserByID rpc request
