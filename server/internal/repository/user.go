@@ -12,6 +12,7 @@ import (
 type UserCollection interface {
 	CreateUser(id, name, email, password string) (*datastruct.User, error)
 	GetUser(email string) (*datastruct.User, error)
+	UserExists(email string) (bool, error)
 	DeleteUser(email string) error
 }
 
@@ -66,6 +67,11 @@ func (*userCollection) GetUser(email string) (*datastruct.User, error) {
 
 	// If all correct return the found user
 	return &foundUser, nil
+}
+
+func (*userCollection) UserExists(email string) (bool, error) {
+	// Check if user exists in DB
+	return DB.HExists(context.Background(), USERS_COLLECTION, USERS+email).Result()
 }
 
 func (*userCollection) DeleteUser(email string) error {

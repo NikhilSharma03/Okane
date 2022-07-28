@@ -47,6 +47,17 @@ func (us *userService) CreateUser(name, email, password string) (*datastruct.Use
 		return nil, fmt.Errorf("failed to hash user password")
 	}
 
+	// Check if user already exists
+	userExists, err := us.dao.NewUserCollection().UserExists(email)
+	if err != nil {
+		us.lg.Printf("Failed to check if user exists")
+		return nil, fmt.Errorf("failed to check if user exists")
+	}
+	if userExists {
+		us.lg.Printf("User already exists")
+		return nil, fmt.Errorf("user already exists. Please User different email")
+	}
+
 	// create user
 	user, err := us.dao.NewUserCollection().CreateUser(id, name, email, string(hpassword))
 	if err != nil {
