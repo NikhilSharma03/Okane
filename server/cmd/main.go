@@ -12,18 +12,25 @@ import (
 	"github.com/NikhilSharma03/Okane/server/internal/service"
 	okanepb "github.com/NikhilSharma03/Okane/server/pkg/protobuf"
 	"github.com/grpc-ecosystem/grpc-gateway/v2/runtime"
+	"github.com/joho/godotenv"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/credentials/insecure"
 )
 
 func main() {
+	// Initialize environmental variables
+	err := godotenv.Load()
+	if err != nil {
+		log.Fatal("Error loading .env file")
+	}
+
 	// Initialize logger
 	lg := log.New(os.Stdout, "okane-api", log.LstdFlags)
 
 	// Connect DB
 	dbClient := repository.ConnectDB()
 	// Check if DB is connected
-	_, err := dbClient.Ping(context.Background()).Result()
+	_, err = dbClient.Ping(context.Background()).Result()
 	if err != nil {
 		log.Fatalln("Failed to connect DB.", err)
 	}
@@ -32,6 +39,7 @@ func main() {
 	dao := repository.NewDAO(dbClient)
 	// Register all services
 	userService := service.NewUserService(dao, lg)
+	jwtService := service.NewJWTService(lg)
 
 	// Starting gRPC server
 	go func() {
@@ -43,7 +51,7 @@ func main() {
 		// Initialize new grpc server
 		grpcServer := grpc.NewServer()
 		// Register server
-		okanepb.RegisterOkaneUserServer(grpcServer, app.NewUserService(userService))
+		okanepb.RegisterOkaneUserServer(grpcServer, app.NewUserService(userService, jwtService))
 		// Server grpc server on listener
 		err = grpcServer.Serve(listener)
 		if err != nil {

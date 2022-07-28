@@ -10,15 +10,20 @@ import (
 
 // GetUserByID fetch and returns user if exists
 func (us *UserService) GetUserByID(ctx context.Context, req *okanepb.GetUserByIDRequest) (*okanepb.GetUserByIDResponse, error) {
-	// Get UserID from request
-	userID := req.GetId()
+	// Get UserEmail from request
+	userEmail := req.GetEmail()
 	// Get Password from metadata
 	userCred, ok := getCredFromMetadata(ctx)
 	if !ok {
 		return nil, fmt.Errorf("cred metadata not found in header")
 	}
 	// Check and get user if exists
-	userData, err := us.userService.GetUserByID(userID, userCred)
+	userData, err := us.userService.GetUser(userEmail, userCred)
+	if err != nil {
+		return nil, fmt.Errorf("%v", err)
+	}
+	// Generate JWT token
+	token, err := us.jwtService.GenerateJWT(userData.ID, userData.Email)
 	if err != nil {
 		return nil, fmt.Errorf("%v", err)
 	}
@@ -36,5 +41,6 @@ func (us *UserService) GetUserByID(ctx context.Context, req *okanepb.GetUserByID
 				Nanos:        userData.Balance.Nanos,
 			},
 		},
+		Token: token,
 	}, nil
 }

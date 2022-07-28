@@ -11,8 +11,9 @@ import (
 // The UserCollection defines the methods a struct need to have
 type UserCollection interface {
 	CreateUser(id, name, email, password string) (*datastruct.User, error)
-	GetUserByID(id string) (*datastruct.User, error)
-	DeleteUserByID(id string) error
+	GetUser(email string) (*datastruct.User, error)
+	UserExists(email string) (bool, error)
+	DeleteUser(email string) error
 }
 
 // User Database constants
@@ -38,7 +39,7 @@ func (*userCollection) CreateUser(id, name, email, password string) (*datastruct
 	}
 
 	// Storing in redis Hash
-	_, err = DB.HSet(context.Background(), USERS_COLLECTION, USERS+id, newUserJSON).Result()
+	_, err = DB.HSet(context.Background(), USERS_COLLECTION, USERS+email, newUserJSON).Result()
 	if err != nil {
 		return nil, fmt.Errorf("failed to store new user in redis hash")
 	}
@@ -47,12 +48,12 @@ func (*userCollection) CreateUser(id, name, email, password string) (*datastruct
 	return newUser, nil
 }
 
-func (*userCollection) GetUserByID(id string) (*datastruct.User, error) {
+func (*userCollection) GetUser(email string) (*datastruct.User, error) {
 	// Fetch user from database
-	data, err := DB.HGet(context.Background(), USERS_COLLECTION, USERS+id).Result()
+	data, err := DB.HGet(context.Background(), USERS_COLLECTION, USERS+email).Result()
 	if err != nil {
 		if err == redis.Nil {
-			return nil, fmt.Errorf("no user found with provided ID")
+			return nil, fmt.Errorf("no user found with provided email")
 		}
 		return nil, fmt.Errorf("failed to fetch user")
 	}
@@ -68,9 +69,14 @@ func (*userCollection) GetUserByID(id string) (*datastruct.User, error) {
 	return &foundUser, nil
 }
 
-func (*userCollection) DeleteUserByID(id string) error {
+func (*userCollection) UserExists(email string) (bool, error) {
+	// Check if user exists in DB
+	return DB.HExists(context.Background(), USERS_COLLECTION, USERS+email).Result()
+}
+
+func (*userCollection) DeleteUser(email string) error {
 	// Remove user from DB
-	_, err := DB.HDel(context.Background(), USERS_COLLECTION, USERS+id).Result()
+	_, err := DB.HDel(context.Background(), USERS_COLLECTION, USERS+email).Result()
 	if err != nil {
 		return fmt.Errorf("failed to remove user")
 	}

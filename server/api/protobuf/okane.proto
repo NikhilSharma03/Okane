@@ -36,7 +36,8 @@ message GetUserByIDRequest {
 // GetUserByIDResponse is used in GetUserByID returns
 message GetUserByIDResponse {
     string message = 1;
-    User user_data = 2; 
+    string token = 2;
+    User user_data = 3; 
 }
 
 // UpdateUserByIDRequest is used in UpdateUserByID rpc request
@@ -78,14 +79,14 @@ service OkaneUser {
     // Get User By ID returns the user with provided ID
     rpc GetUserByID(GetUserByIDRequest) returns (GetUserByIDResponse) {
         option (google.api.http) = {
-            get:"/api/user/{id}"
+            get:"/api/user/{email}"
         };
     };
 
     // Update User By ID updates the user with provided ID
     rpc UpdateUserByID(UpdateUserByIDRequest) returns (UpdateUserByIDResponse) {
         option (google.api.http) = {
-            patch: "/api/user/{id}"
+            patch: "/api/user/{email}"
             body: "*"
         };
     };
@@ -93,7 +94,7 @@ service OkaneUser {
     // Delete User By ID deletes the user with provided ID
     rpc DeleteUserByID(DeleteUserByIDRequest) returns (DeleteUserByIDResponse) {
         option (google.api.http) = {
-            delete: "/api/user/{id}"
+            delete: "/api/user/{email}"
         };
     };
 }

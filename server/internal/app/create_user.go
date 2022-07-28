@@ -15,7 +15,7 @@ func (us *UserService) CreateUser(ctx context.Context, req *okanepb.CreateUserRe
 	// Create User using User Service
 	user, err := us.userService.CreateUser(uData.Name, uData.Email, uData.Password)
 	if err != nil {
-		return nil, fmt.Errorf("failed to create user %v", err.Error())
+		return nil, fmt.Errorf("failed to create user! %v", err.Error())
 	}
 	// If user created successfully
 	userResponse := &okanepb.CreateUserResponse{Message: "User Created Successfully", UserData: &okanepb.User{

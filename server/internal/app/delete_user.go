@@ -10,15 +10,15 @@ import (
 
 // DeleteUserByID deletes the user with provided ID
 func (us *UserService) DeleteUserByID(ctx context.Context, req *okanepb.DeleteUserByIDRequest) (*okanepb.DeleteUserByIDResponse, error) {
-	// Get UserID from request
-	userID := req.GetId()
+	// Get Email from request
+	userEmail := req.GetEmail()
 	// Get Password from metadata
 	userCred, ok := getCredFromMetadata(ctx)
 	if !ok {
 		return nil, fmt.Errorf("cred metadata not found in header")
 	}
 	// Check and delete user if exists
-	userData, err := us.userService.DeleteUserByID(userID, userCred)
+	userData, err := us.userService.DeleteUser(userEmail, userCred)
 	if err != nil {
 		return nil, fmt.Errorf("%v", err)
 	}

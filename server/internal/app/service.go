@@ -10,11 +10,13 @@ import (
 type UserService struct {
 	okanepb.UnimplementedOkaneUserServer
 	userService service.UserService
+	jwtService  service.JWTService
 }
 
 // NewUserService takes service.userService and returns UserService
-func NewUserService(userService service.UserService) *UserService {
+func NewUserService(userService service.UserService, jwtService service.JWTService) *UserService {
 	return &UserService{
 		userService: userService,
+		jwtService:  jwtService,
 	}
 }
