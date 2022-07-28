@@ -14,7 +14,7 @@ type ExpenseCollection interface {
 	CreateExpense(expense_data *datastruct.Expense) (*datastruct.Expense, error)
 	GetExpenses(userID string) ([]*datastruct.Expense, error)
 	GetExpenseByID(expenseID string) (*datastruct.Expense, error)
-	DeleteExpenseByID(expenseID string) (*datastruct.Expense, error)
+	DeleteExpenseByID(expenseID string) error
 }
 
 // The expenseCollection struct implements method as defined in ExpenseCollection interface
@@ -59,7 +59,7 @@ func (*expenseCollection) GetExpenses(userID string) ([]*datastruct.Expense, err
 			if err == redis.Nil {
 				return nil, fmt.Errorf("no expense exists with provided expenseID")
 			}
-			return nil, fmt.Errorf("failed to fetch expense with provided ids")
+			return nil, fmt.Errorf("failed to fetch expense with provided id")
 		}
 		// Unmarshal to expense
 		var expense datastruct.Expense
@@ -73,5 +73,29 @@ func (*expenseCollection) GetExpenses(userID string) ([]*datastruct.Expense, err
 	return userExpenses, nil
 }
 
-func (*expenseCollection) GetExpenseByID(expenseID string) (*datastruct.Expense, error)
-func (*expenseCollection) DeleteExpenseByID(expenseID string) (*datastruct.Expense, error)
+func (*expenseCollection) GetExpenseByID(expenseID string) (*datastruct.Expense, error) {
+	// Fetch expense with provided ID
+	expString, err := DB.HGet(context.Background(), EXPENSE_COLLECTION, EXPENSE+expenseID).Result()
+	if err != nil {
+		if err == redis.Nil {
+			return nil, fmt.Errorf("no expense exists with provided expenseID")
+		}
+		return nil, fmt.Errorf("failed to fetch expense with provided id")
+	}
+	// Unmarshal to expense
+	var expense datastruct.Expense
+	err = expense.Unmarshal(expString)
+	if err != nil {
+		return nil, fmt.Errorf("failed to unmarshal expense data")
+	}
+	return &expense, nil
+}
+
+func (*expenseCollection) DeleteExpenseByID(expenseID string) error {
+	// Remove expense from DB
+	_, err := DB.HDel(context.Background(), EXPENSE_COLLECTION, EXPENSE+expenseID).Result()
+	if err != nil {
+		return fmt.Errorf("failed to remove expense")
+	}
+	return nil
+}
