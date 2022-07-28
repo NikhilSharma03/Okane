@@ -13,9 +13,9 @@ import (
 // The UserService interface defines methods to implement
 type UserService interface {
 	CreateUser(name, email, password string) (*datastruct.User, error)
-	GetUserByID(id, password string) (*datastruct.User, error)
-	UpdateUserByID(id, password, name string) (*datastruct.User, error)
-	DeleteUserByID(id, password string) (*datastruct.User, error)
+	GetUser(email, password string) (*datastruct.User, error)
+	UpdateUser(email, password, name string) (*datastruct.User, error)
+	DeleteUser(email, password string) (*datastruct.User, error)
 }
 
 // The userService struct take dao and logger (lg)
@@ -57,12 +57,12 @@ func (us *userService) CreateUser(name, email, password string) (*datastruct.Use
 	return user, nil
 }
 
-func (us *userService) GetUserByID(id, password string) (*datastruct.User, error) {
+func (us *userService) GetUser(email, password string) (*datastruct.User, error) {
 	// Log
-	us.lg.Println("GetUserByID called...")
+	us.lg.Println("GetUser called...")
 
-	// Fetch user by id
-	user, err := us.dao.NewUserCollection().GetUserByID(id)
+	// Fetch user by email
+	user, err := us.dao.NewUserCollection().GetUser(email)
 	if err != nil {
 		us.lg.Printf("%+v", err.Error())
 		return nil, fmt.Errorf("%+v", err.Error())
@@ -78,12 +78,12 @@ func (us *userService) GetUserByID(id, password string) (*datastruct.User, error
 	return user, nil
 }
 
-func (us *userService) UpdateUserByID(id, password, name string) (*datastruct.User, error) {
+func (us *userService) UpdateUser(email, password, name string) (*datastruct.User, error) {
 	// Log
-	us.lg.Println("UpdateUserByID called...")
+	us.lg.Println("UpdateUser called...")
 
-	// Fetch user by id (if exists)
-	foundUser, err := us.dao.NewUserCollection().GetUserByID(id)
+	// Fetch user by email (if exists)
+	foundUser, err := us.dao.NewUserCollection().GetUser(email)
 	if err != nil {
 		us.lg.Printf("%+v", err.Error())
 		return nil, fmt.Errorf("%+v", err.Error())
@@ -109,10 +109,10 @@ func (us *userService) UpdateUserByID(id, password, name string) (*datastruct.Us
 	return user, nil
 }
 
-func (us *userService) DeleteUserByID(id, password string) (*datastruct.User, error) {
-	us.lg.Println("DeleteUserByID called...")
-	// Fetch user by id (if exists)
-	foundUser, err := us.dao.NewUserCollection().GetUserByID(id)
+func (us *userService) DeleteUser(email, password string) (*datastruct.User, error) {
+	us.lg.Println("DeleteUser called...")
+	// Fetch user by email (if exists)
+	foundUser, err := us.dao.NewUserCollection().GetUser(email)
 	if err != nil {
 		us.lg.Printf("%+v", err.Error())
 		return nil, fmt.Errorf("%+v", err.Error())
@@ -126,7 +126,7 @@ func (us *userService) DeleteUserByID(id, password string) (*datastruct.User, er
 	}
 
 	// Delete User in DB
-	err = us.dao.NewUserCollection().DeleteUserByID(foundUser.ID)
+	err = us.dao.NewUserCollection().DeleteUser(foundUser.Email)
 	if err != nil {
 		us.lg.Printf("Failed to delete user")
 		return nil, fmt.Errorf("failed to delete user")

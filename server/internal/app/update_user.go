@@ -11,9 +11,9 @@ import (
 // UpdateUserByID updates user (if exists) with provided ID
 func (us *UserService) UpdateUserByID(ctx context.Context, req *okanepb.UpdateUserByIDRequest) (*okanepb.UpdateUserByIDResponse, error) {
 	// Get id, name(to update), password from request
-	id, name, pass := req.GetId(), req.GetName(), req.GetPassword()
+	email, name, pass := req.GetEmail(), req.GetName(), req.GetPassword()
 	// Update user using service
-	updatedUser, err := us.userService.UpdateUserByID(id, pass, name)
+	updatedUser, err := us.userService.UpdateUser(email, pass, name)
 	if err != nil {
 		return nil, fmt.Errorf("%v", err)
 	}
