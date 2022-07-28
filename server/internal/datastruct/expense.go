@@ -48,8 +48,14 @@ type Expense struct {
 
 // The NewExpense takes  as param
 // It returns a new Expense struct
-func NewExpense() *Expense {
-	return &Expense{}
+func NewExpense(id, userid, title, desc string, typ EXPENSE_TYPE) *Expense {
+	return &Expense{
+		Id:          id,
+		UserId:      userid,
+		Title:       title,
+		Description: desc,
+		Type:        typ,
+	}
 }
 
 // ToJSON method is available on Expense struct which marshals it to json
