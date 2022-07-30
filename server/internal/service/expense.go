@@ -7,8 +7,7 @@ import (
 )
 
 // The ExpenseService interface defines methods to implement
-type ExpenseService interface {
-}
+type ExpenseService interface{}
 
 // The expenseService struct take dao and logger (lg)
 type expenseService struct {
