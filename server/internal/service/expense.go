@@ -37,6 +37,10 @@ func (es *expenseService) CreateExpense(userID, email, title, description string
 	expenseData.Amount = amount
 
 	// Update user balance
+	err := es.dao.NewUserCollection().UpdateUserBalance(email, expenseData.Amount.Units, expenseData.Amount.Nanos, expenseData.Type)
+	if err != nil {
+		return nil, err
+	}
 
 	// Store expense in DB
 	return es.dao.NewExpenseCollection().CreateExpense(expenseData)
