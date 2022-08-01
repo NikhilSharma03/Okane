@@ -13,6 +13,7 @@ import (
 type ExpenseService interface {
 	CreateExpense(userID, email, title, description string, amount *datastruct.Amount, expenseType datastruct.EXPENSE_TYPE) (*datastruct.Expense, error)
 	GetExpenses(userID string) ([]*datastruct.Expense, error)
+	GetExpenseByID(expenseID string) (*datastruct.Expense, error)
 }
 
 // The expenseService struct take dao and logger (lg)
@@ -49,4 +50,8 @@ func (es *expenseService) CreateExpense(userID, email, title, description string
 
 func (es *expenseService) GetExpenses(userID string) ([]*datastruct.Expense, error) {
 	return es.dao.NewExpenseCollection().GetExpenses(userID)
+}
+
+func (es *expenseService) GetExpenseByID(expenseID string) (*datastruct.Expense, error) {
+	return es.dao.NewExpenseCollection().GetExpenseByID(expenseID)
 }
