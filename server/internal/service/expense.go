@@ -12,6 +12,7 @@ import (
 // The ExpenseService interface defines methods to implement
 type ExpenseService interface {
 	CreateExpense(userID, email, title, description string, amount *datastruct.Amount, expenseType datastruct.EXPENSE_TYPE) (*datastruct.Expense, error)
+	GetExpenses(userID string) ([]*datastruct.Expense, error)
 }
 
 // The expenseService struct take dao and logger (lg)
@@ -44,4 +45,8 @@ func (es *expenseService) CreateExpense(userID, email, title, description string
 
 	// Store expense in DB
 	return es.dao.NewExpenseCollection().CreateExpense(expenseData)
+}
+
+func (es *expenseService) GetExpenses(userID string) ([]*datastruct.Expense, error) {
+	return es.dao.NewExpenseCollection().GetExpenses(userID)
 }
