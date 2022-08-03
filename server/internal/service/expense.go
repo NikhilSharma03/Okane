@@ -15,6 +15,7 @@ type ExpenseService interface {
 	GetExpenses(userID string) ([]*datastruct.Expense, error)
 	GetExpenseByID(expenseID string) (*datastruct.Expense, error)
 	UpdateExpenseByID(expenseID, userID, email, title, description string, amount *datastruct.Amount, expenseType datastruct.EXPENSE_TYPE) (*datastruct.Expense, error)
+	DeleteExpenseByID(userID, expenseID string) error
 }
 
 // The expenseService struct take dao and logger (lg)
@@ -70,4 +71,8 @@ func (es *expenseService) UpdateExpenseByID(expenseID, userID, email, title, des
 
 	// Store expense in DB
 	return es.dao.NewExpenseCollection().CreateExpense(expenseData)
+}
+
+func (es *expenseService) DeleteExpenseByID(userID, expenseID string) error {
+	return es.dao.NewExpenseCollection().DeleteExpenseByID(userID, expenseID)
 }
