@@ -14,6 +14,7 @@ type ExpenseService interface {
 	CreateExpense(userID, email, title, description string, amount *datastruct.Amount, expenseType datastruct.EXPENSE_TYPE) (*datastruct.Expense, error)
 	GetExpenses(userID string) ([]*datastruct.Expense, error)
 	GetExpenseByID(expenseID string) (*datastruct.Expense, error)
+	UpdateExpenseByID(expenseID, userID, email, title, description string, amount *datastruct.Amount, expenseType datastruct.EXPENSE_TYPE) (*datastruct.Expense, error)
 }
 
 // The expenseService struct take dao and logger (lg)
@@ -54,4 +55,19 @@ func (es *expenseService) GetExpenses(userID string) ([]*datastruct.Expense, err
 
 func (es *expenseService) GetExpenseByID(expenseID string) (*datastruct.Expense, error) {
 	return es.dao.NewExpenseCollection().GetExpenseByID(expenseID)
+}
+
+func (es *expenseService) UpdateExpenseByID(expenseID, userID, email, title, description string, amount *datastruct.Amount, expenseType datastruct.EXPENSE_TYPE) (*datastruct.Expense, error) {
+	// Create updated expense
+	expenseData := datastruct.NewExpense(expenseID, userID, title, description, expenseType)
+	expenseData.Amount = amount
+
+	// Update user balance
+	err := es.dao.NewUserCollection().UpdateUserBalance(email, expenseData.Amount.Units, expenseData.Amount.Nanos, expenseData.Type)
+	if err != nil {
+		return nil, err
+	}
+
+	// Store expense in DB
+	return es.dao.NewExpenseCollection().CreateExpense(expenseData)
 }
