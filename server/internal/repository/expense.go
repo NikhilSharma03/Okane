@@ -14,7 +14,7 @@ type ExpenseCollection interface {
 	CreateExpense(expense_data *datastruct.Expense) (*datastruct.Expense, error)
 	GetExpenses(userID string) ([]*datastruct.Expense, error)
 	GetExpenseByID(expenseID string) (*datastruct.Expense, error)
-	DeleteExpenseByID(expenseID string) error
+	DeleteExpenseByID(userID, expenseID string) error
 }
 
 // The expenseCollection struct implements method as defined in ExpenseCollection interface
@@ -91,11 +91,16 @@ func (*expenseCollection) GetExpenseByID(expenseID string) (*datastruct.Expense,
 	return &expense, nil
 }
 
-func (*expenseCollection) DeleteExpenseByID(expenseID string) error {
+func (*expenseCollection) DeleteExpenseByID(userID, expenseID string) error {
 	// Remove expense from DB
 	_, err := DB.HDel(context.Background(), EXPENSE_COLLECTION, EXPENSE+expenseID).Result()
 	if err != nil {
 		return fmt.Errorf("failed to remove expense")
+	}
+	// Remove the expense ID from user_expense
+	_, err = DB.ZRem(context.Background(), USER_EXPENSE+userID, expenseID).Result()
+	if err != nil {
+		return fmt.Errorf("failed to remove expense from user_expense")
 	}
 	return nil
 }

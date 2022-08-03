@@ -20,3 +20,19 @@ func NewUserService(userService service.UserService, jwtService service.JWTServi
 		jwtService:  jwtService,
 	}
 }
+
+// The ExpenseService implements handler of okanepb.ExpenseService
+// It is used in registering OkaneExpenseServer on grpc Server
+type ExpenseService struct {
+	okanepb.UnimplementedOkaneExpenseServer
+	expenseService service.ExpenseService
+	jwtService     service.JWTService
+}
+
+// NewExpenseService takes service.expenseService and service.JWTService and returns ExpenseService
+func NewExpenseService(expenseService service.ExpenseService, jwtService service.JWTService) *ExpenseService {
+	return &ExpenseService{
+		expenseService: expenseService,
+		jwtService:     jwtService,
+	}
+}

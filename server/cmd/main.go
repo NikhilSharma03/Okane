@@ -39,6 +39,7 @@ func main() {
 	dao := repository.NewDAO(dbClient)
 	// Register all services
 	userService := service.NewUserService(dao, lg)
+	expenseService := service.NewExpenseService(dao, lg)
 	jwtService := service.NewJWTService(lg)
 
 	// Starting gRPC server
@@ -52,6 +53,7 @@ func main() {
 		grpcServer := grpc.NewServer()
 		// Register server
 		okanepb.RegisterOkaneUserServer(grpcServer, app.NewUserService(userService, jwtService))
+		okanepb.RegisterOkaneExpenseServer(grpcServer, app.NewExpenseService(expenseService, jwtService))
 		// Server grpc server on listener
 		err = grpcServer.Serve(listener)
 		if err != nil {
@@ -74,7 +76,11 @@ func main() {
 	// Register OkaneUser
 	err = okanepb.RegisterOkaneUserHandler(context.Background(), gwmux, conn)
 	if err != nil {
-		log.Fatalln("Failed to register gateway:", err)
+		log.Fatalln("Failed to register user handler:", err)
+	}
+	err = okanepb.RegisterOkaneExpenseHandler(context.Background(), gwmux, conn)
+	if err != nil {
+		log.Fatalln("Failed to register expense handler:", err)
 	}
 
 	gwServer := &http.Server{
