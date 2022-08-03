@@ -1,6 +1,8 @@
 package repository
 
-import "github.com/go-redis/redis/v8"
+import (
+	"github.com/go-redis/redis/v8"
+)
 
 // DAO interface
 type DAO interface {
@@ -31,10 +33,10 @@ var DB *redis.Client
 
 // ConnectDB connect to redis database
 // It returns a new Redis Client
-func ConnectDB() *redis.Client {
+func ConnectDB(address, pass string, db int) *redis.Client {
 	return redis.NewClient(&redis.Options{
-		Addr:     "localhost:6379",
-		Password: "",
-		DB:       0,
+		Addr:     address,
+		Password: pass,
+		DB:       db,
 	})
 }
