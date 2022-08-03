@@ -12,6 +12,7 @@ import (
 // The JWTService interface defines methods needs to implement
 type JWTService interface {
 	GenerateJWT(id, email string) (string, error)
+	ExtractDataFromToken(token string)
 }
 
 // The jWTService struct implements interface methods
@@ -48,4 +49,21 @@ func (js *jWTService) GenerateJWT(id, email string) (string, error) {
 	}
 
 	return tokenString, nil
+}
+
+func (js *jWTService) ExtractDataFromToken(token string) (jwt.MapClaims, error) {
+	var mySigningKey = []byte(os.Getenv("JWT_SECRET_KEY"))
+	tok, err := jwt.Parse(token, func(token *jwt.Token) (interface{}, error) {
+		if _, ok := token.Method.(*jwt.SigningMethodHMAC); !ok {
+			return nil, fmt.Errorf("There was an error in parsing")
+		}
+		return mySigningKey, nil
+	})
+	if err != nil {
+		return nil, fmt.Errorf("Your token has been expired")
+	}
+	if claims, ok := tok.Claims.(jwt.MapClaims); ok && tok.Valid {
+		return claims, nil
+	}
+	return nil, fmt.Errorf("Failed to extract data from JWT token")
 }
