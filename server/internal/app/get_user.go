@@ -13,7 +13,7 @@ func (us *UserService) GetUserByID(ctx context.Context, req *okanepb.GetUserByID
 	// Get UserEmail from request
 	userEmail := req.GetEmail()
 	// Get Password from metadata
-	userCred, ok := getCredFromMetadata(ctx)
+	userCred, ok := getCredFromMetadata(ctx, "cred")
 	if !ok {
 		return nil, fmt.Errorf("cred metadata not found in header")
 	}

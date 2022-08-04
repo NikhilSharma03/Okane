@@ -8,7 +8,7 @@ import (
 
 	"github.com/NikhilSharma03/Okane/server/internal/datastruct"
 	"github.com/go-redis/redis/v8"
-	"github.com/strongo/decimal"
+	"github.com/shopspring/decimal"
 )
 
 // The UserCollection defines the methods a struct need to have
@@ -24,6 +24,7 @@ type UserCollection interface {
 const (
 	USERS_COLLECTION = "users"
 	USERS            = "users:"
+	MAX_NANOS        = 999999999
 )
 
 // The userCollection struct implements method as defined in UserCollection interface
@@ -94,30 +95,64 @@ func (ur *userCollection) UpdateUserBalance(email string, expenseAmountUnits int
 	if err != nil {
 		return err
 	}
-
-	// Create float for calculation of Money type
-	userBalaceFloat := decimal.NewDecimal64p2(user.Balance.Units, int8(user.Balance.Nanos))
-	expenseAmountFloat := decimal.NewDecimal64p2(expenseAmountUnits, int8(expenseAmountNanos))
 	// Calculate user result balance
-	var resultBal decimal.Decimal64p2
+	var resultBalanceUnits int64
+	var resultBalanceNanos int64
 	if expenseType == datastruct.CREDIT {
-		resultBal = userBalaceFloat + expenseAmountFloat
+		resultBalanceUnits = int64(user.Balance.Units + expenseAmountUnits)
+		resultBalanceNanos = int64(user.Balance.Nanos + expenseAmountNanos)
+		if resultBalanceNanos > MAX_NANOS {
+			resultBalanceUnits += 1
+			nanoString := strconv.Itoa(int(resultBalanceNanos))
+			newNanoString := nanoString[1:]
+			newNanoInt, _ := strconv.Atoi(newNanoString)
+			resultBalanceNanos = int64(newNanoInt)
+		}
 	} else if expenseType == datastruct.DEBIT {
-		resultBal = userBalaceFloat - expenseAmountFloat
+		userBalUnits := strconv.Itoa(int(user.Balance.Units))
+		userBalNanos := strconv.Itoa(int(user.Balance.Nanos))
+		expenseAmtUnits := strconv.Itoa(int(expenseAmountUnits))
+		expenseAmtNanos := strconv.Itoa(int(expenseAmountNanos))
+		userBal := userBalUnits + "."
+		for i := len(userBalNanos); i < 9; i++ {
+			userBal += "0"
+		}
+		userBal += userBalNanos
+		expAmt := expenseAmtUnits + "."
+		for i := len(expenseAmtNanos); i < 9; i++ {
+			expAmt += "0"
+		}
+		expAmt += expenseAmtNanos
+		decimal.DivisionPrecision = 9
+		userBalDec, err := decimal.NewFromString(userBal)
+		if err != nil {
+			return err
+		}
+		expAmtDec, err := decimal.NewFromString(expAmt)
+		if err != nil {
+			return err
+		}
+		result := userBalDec.Sub(expAmtDec).String()
+		resultArr := strings.Split(result, ".")
+		// Set Nanos and Units
+		resultUnit, _ := strconv.Atoi(string(resultArr[0]))
+		resultBalanceUnits = int64(resultUnit)
+		if len(resultArr) == 2 {
+			currNanos := string(resultArr[1])
+			currLength := len(currNanos)
+			for currLength < 9 {
+				currNanos += "0"
+				currLength++
+			}
+			resultNanos, _ := strconv.Atoi(currNanos)
+			resultBalanceNanos = int64(resultNanos)
+		} else {
+			resultBalanceNanos = 0
+		}
 	}
-	resBal := resultBal.String()
-	res := strings.Split(resBal, ".")
-	userBalUnits, _ := strconv.Atoi(res[0])
-	var userBalNanos int
-	if len(res) == 2 {
-		userBalNanos, _ = strconv.Atoi(res[1])
-	} else {
-		userBalNanos = 0
-	}
-
-	// Update user Balance in DB
+	// // Update user Balance in DB
 	newUser := datastruct.NewUser(user.ID, user.Name, user.Email, user.Password)
-	newUserBal := datastruct.NewBalance("USD", int64(userBalUnits), int32(userBalNanos))
+	newUserBal := datastruct.NewBalance("USD", int64(resultBalanceUnits), int32(resultBalanceNanos))
 	newUser.Balance = newUserBal
 	// Marshalling newUser to JSON
 	newUserJSON, err := newUser.ToJSON()

@@ -30,6 +30,7 @@ func NewExpenseService(dao repository.DAO, lg *log.Logger) ExpenseService {
 }
 
 func (es *expenseService) CreateExpense(userID, email, title, description string, amount *datastruct.Amount, expenseType datastruct.EXPENSE_TYPE) (*datastruct.Expense, error) {
+	es.lg.Println("CreateExpense Called...")
 	// Generate expenseID
 	id := uuid.New().String()
 	if id == "" {
@@ -43,6 +44,7 @@ func (es *expenseService) CreateExpense(userID, email, title, description string
 	// Update user balance
 	err := es.dao.NewUserCollection().UpdateUserBalance(email, expenseData.Amount.Units, expenseData.Amount.Nanos, expenseData.Type)
 	if err != nil {
+		es.lg.Printf(err.Error())
 		return nil, err
 	}
 
@@ -51,14 +53,17 @@ func (es *expenseService) CreateExpense(userID, email, title, description string
 }
 
 func (es *expenseService) GetExpenses(userID string) ([]*datastruct.Expense, error) {
+	es.lg.Println("GetExpenses Called...")
 	return es.dao.NewExpenseCollection().GetExpenses(userID)
 }
 
 func (es *expenseService) GetExpenseByID(expenseID string) (*datastruct.Expense, error) {
+	es.lg.Println("GetExpenseByID Called...")
 	return es.dao.NewExpenseCollection().GetExpenseByID(expenseID)
 }
 
 func (es *expenseService) UpdateExpenseByID(expenseID, userID, email, title, description string, amount *datastruct.Amount, expenseType datastruct.EXPENSE_TYPE) (*datastruct.Expense, error) {
+	es.lg.Println("UpdateExpenseByID Called...")
 	// Create updated expense
 	expenseData := datastruct.NewExpense(expenseID, userID, title, description, expenseType)
 	expenseData.Amount = amount
@@ -66,13 +71,14 @@ func (es *expenseService) UpdateExpenseByID(expenseID, userID, email, title, des
 	// Update user balance
 	err := es.dao.NewUserCollection().UpdateUserBalance(email, expenseData.Amount.Units, expenseData.Amount.Nanos, expenseData.Type)
 	if err != nil {
+		es.lg.Printf(err.Error())
 		return nil, err
 	}
-
 	// Store expense in DB
 	return es.dao.NewExpenseCollection().CreateExpense(expenseData)
 }
 
 func (es *expenseService) DeleteExpenseByID(userID, expenseID string) error {
+	es.lg.Println("DeleteExpenseByID Called...")
 	return es.dao.NewExpenseCollection().DeleteExpenseByID(userID, expenseID)
 }
