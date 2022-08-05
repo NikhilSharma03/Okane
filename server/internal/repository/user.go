@@ -67,7 +67,7 @@ func (*userCollection) GetUser(email string) (*datastruct.User, error) {
 	var foundUser datastruct.User
 	err = foundUser.Unmarshal(data)
 	if err != nil {
-		return nil, fmt.Errorf("failed to unmarshal found user")
+		return nil, fmt.Errorf("failed to unmarshal found user %v", err)
 	}
 
 	// If all correct return the found user
@@ -117,12 +117,28 @@ func (ur *userCollection) UpdateUserBalance(email string, expenseAmountUnits int
 		for i := len(userBalNanos); i < 9; i++ {
 			userBal += "0"
 		}
-		userBal += userBalNanos
+		if strings.Contains(userBalNanos, "-") {
+			userBal += strings.Replace(userBalNanos, "-", "", 1)
+			if !strings.Contains(userBal, "-") {
+				temp := "-" + userBal
+				userBal = temp
+			}
+		} else {
+			userBal += userBalNanos
+		}
 		expAmt := expenseAmtUnits + "."
 		for i := len(expenseAmtNanos); i < 9; i++ {
 			expAmt += "0"
 		}
-		expAmt += expenseAmtNanos
+		if strings.Contains(expenseAmtNanos, "-") {
+			expAmt += strings.Replace(expenseAmtNanos, "-", "", 1)
+			if !strings.Contains(expAmt, "-") {
+				temp := "-" + expAmt
+				expAmt = temp
+			}
+		} else {
+			expAmt += expenseAmtNanos
+		}
 		decimal.DivisionPrecision = 9
 		userBalDec, err := decimal.NewFromString(userBal)
 		if err != nil {
@@ -146,6 +162,10 @@ func (ur *userCollection) UpdateUserBalance(email string, expenseAmountUnits int
 			}
 			resultNanos, _ := strconv.Atoi(currNanos)
 			resultBalanceNanos = int64(resultNanos)
+			if strings.Contains(result, "-") {
+				temp := -(resultBalanceNanos)
+				resultBalanceNanos = temp
+			}
 		} else {
 			resultBalanceNanos = 0
 		}
