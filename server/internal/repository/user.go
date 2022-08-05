@@ -3,12 +3,10 @@ package repository
 import (
 	"context"
 	"fmt"
-	"strconv"
-	"strings"
 
 	"github.com/NikhilSharma03/Okane/server/internal/datastruct"
+	"github.com/NikhilSharma03/Okane/server/internal/utils"
 	"github.com/go-redis/redis/v8"
-	"github.com/shopspring/decimal"
 )
 
 // The UserCollection defines the methods a struct need to have
@@ -99,128 +97,14 @@ func (ur *userCollection) UpdateUserBalance(email string, expenseAmountUnits int
 	var resultBalanceUnits int64
 	var resultBalanceNanos int64
 	if expenseType == datastruct.CREDIT {
-		userBalUnits := strconv.Itoa(int(user.Balance.Units))
-		userBalNanos := strconv.Itoa(int(user.Balance.Nanos))
-		expenseAmtUnits := strconv.Itoa(int(expenseAmountUnits))
-		expenseAmtNanos := strconv.Itoa(int(expenseAmountNanos))
-		userBal := userBalUnits + "."
-		for i := len(userBalNanos); i < 9; i++ {
-			userBal += "0"
-		}
-		if strings.Contains(userBalNanos, "-") {
-			userBal += strings.Replace(userBalNanos, "-", "", 1)
-			if !strings.Contains(userBal, "-") {
-				temp := "-" + userBal
-				userBal = temp
-			}
-		} else {
-			userBal += userBalNanos
-		}
-		expAmt := expenseAmtUnits + "."
-		for i := len(expenseAmtNanos); i < 9; i++ {
-			expAmt += "0"
-		}
-		if strings.Contains(expenseAmtNanos, "-") {
-			expAmt += strings.Replace(expenseAmtNanos, "-", "", 1)
-			if !strings.Contains(expAmt, "-") {
-				temp := "-" + expAmt
-				expAmt = temp
-			}
-		} else {
-			expAmt += expenseAmtNanos
-		}
-		decimal.DivisionPrecision = 9
-		userBalDec, err := decimal.NewFromString(userBal)
+		resultBalanceUnits, resultBalanceNanos, _, err = utils.Calculate(user.Balance.Units, expenseAmountUnits, user.Balance.Nanos, expenseAmountNanos, "add")
 		if err != nil {
 			return err
-		}
-		expAmtDec, err := decimal.NewFromString(expAmt)
-		if err != nil {
-			return err
-		}
-		result := userBalDec.Add(expAmtDec).String()
-		fmt.Println("Result ====")
-		fmt.Println(result)
-		resultArr := strings.Split(result, ".")
-		// Set Nanos and Units
-		resultUnit, _ := strconv.Atoi(string(resultArr[0]))
-		resultBalanceUnits = int64(resultUnit)
-		if len(resultArr) == 2 {
-			currNanos := string(resultArr[1])
-			currLength := len(currNanos)
-			for currLength < 9 {
-				currNanos += "0"
-				currLength++
-			}
-			resultNanos, _ := strconv.Atoi(currNanos)
-			resultBalanceNanos = int64(resultNanos)
-			if strings.Contains(result, "-") {
-				temp := -(resultBalanceNanos)
-				resultBalanceNanos = temp
-			}
-		} else {
-			resultBalanceNanos = 0
 		}
 	} else if expenseType == datastruct.DEBIT {
-		userBalUnits := strconv.Itoa(int(user.Balance.Units))
-		userBalNanos := strconv.Itoa(int(user.Balance.Nanos))
-		expenseAmtUnits := strconv.Itoa(int(expenseAmountUnits))
-		expenseAmtNanos := strconv.Itoa(int(expenseAmountNanos))
-		userBal := userBalUnits + "."
-		for i := len(userBalNanos); i < 9; i++ {
-			userBal += "0"
-		}
-		if strings.Contains(userBalNanos, "-") {
-			userBal += strings.Replace(userBalNanos, "-", "", 1)
-			if !strings.Contains(userBal, "-") {
-				temp := "-" + userBal
-				userBal = temp
-			}
-		} else {
-			userBal += userBalNanos
-		}
-		expAmt := expenseAmtUnits + "."
-		for i := len(expenseAmtNanos); i < 9; i++ {
-			expAmt += "0"
-		}
-		if strings.Contains(expenseAmtNanos, "-") {
-			expAmt += strings.Replace(expenseAmtNanos, "-", "", 1)
-			if !strings.Contains(expAmt, "-") {
-				temp := "-" + expAmt
-				expAmt = temp
-			}
-		} else {
-			expAmt += expenseAmtNanos
-		}
-		decimal.DivisionPrecision = 9
-		userBalDec, err := decimal.NewFromString(userBal)
+		resultBalanceUnits, resultBalanceNanos, _, err = utils.Calculate(user.Balance.Units, expenseAmountUnits, user.Balance.Nanos, expenseAmountNanos, "sub")
 		if err != nil {
 			return err
-		}
-		expAmtDec, err := decimal.NewFromString(expAmt)
-		if err != nil {
-			return err
-		}
-		result := userBalDec.Sub(expAmtDec).String()
-		resultArr := strings.Split(result, ".")
-		// Set Nanos and Units
-		resultUnit, _ := strconv.Atoi(string(resultArr[0]))
-		resultBalanceUnits = int64(resultUnit)
-		if len(resultArr) == 2 {
-			currNanos := string(resultArr[1])
-			currLength := len(currNanos)
-			for currLength < 9 {
-				currNanos += "0"
-				currLength++
-			}
-			resultNanos, _ := strconv.Atoi(currNanos)
-			resultBalanceNanos = int64(resultNanos)
-			if strings.Contains(result, "-") {
-				temp := -(resultBalanceNanos)
-				resultBalanceNanos = temp
-			}
-		} else {
-			resultBalanceNanos = 0
 		}
 	}
 	// // Update user Balance in DB

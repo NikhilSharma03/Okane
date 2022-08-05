@@ -9,8 +9,8 @@ import (
 
 	"github.com/NikhilSharma03/Okane/server/internal/datastruct"
 	"github.com/NikhilSharma03/Okane/server/internal/repository"
+	"github.com/NikhilSharma03/Okane/server/internal/utils"
 	"github.com/google/uuid"
-	"github.com/shopspring/decimal"
 )
 
 // The ExpenseService interface defines methods to implement
@@ -84,124 +84,24 @@ func (es *expenseService) UpdateExpenseByID(oldExpense *datastruct.Expense, expe
 		newExpenseUnits := expenseData.Amount.Units
 		newExpenseNanos := expenseData.Amount.Nanos
 		if oldExpense.Type == datastruct.CREDIT {
-			newExpUnits := strconv.Itoa(int(newExpenseUnits))
-			newExpNanos := strconv.Itoa(int(newExpenseNanos))
-			oldExpUnits := strconv.Itoa(int(oldExpenseUnits))
-			oldExpNanos := strconv.Itoa(int(oldExpenseNanos))
-			newExp := newExpUnits + "."
-			for i := len(newExpNanos); i < 9; i++ {
-				newExp += "0"
-			}
-
-			if strings.Contains(newExpNanos, "-") {
-				newExp += strings.Replace(newExpNanos, "-", "", 1)
-				temp := "-" + newExp
-				newExp = temp
-			} else {
-				newExp += newExpNanos
-			}
-
-			oldExp := oldExpUnits + "."
-			for i := len(oldExpNanos); i < 9; i++ {
-				oldExp += "0"
-			}
-			if strings.Contains(oldExpNanos, "-") {
-				oldExp += strings.Replace(oldExpNanos, "-", "", 1)
-				temp := "-" + oldExp
-				oldExp = temp
-			} else {
-				oldExp += oldExpNanos
-			}
-			decimal.DivisionPrecision = 9
-			newExpDec, err := decimal.NewFromString(newExp)
+			fAU, fAN, result, err := utils.Calculate(newExpenseUnits, oldExpenseUnits, newExpenseNanos, oldExpenseNanos, "sub")
 			if err != nil {
 				return nil, err
-			}
-			oldExpDec, err := decimal.NewFromString(oldExp)
-			if err != nil {
-				return nil, err
-			}
-			result := newExpDec.Sub(oldExpDec).String()
-			resultArr := strings.Split(result, ".")
-			// Set Nanos and Units
-			resultUnit, _ := strconv.Atoi(string(resultArr[0]))
-			finalAmountUnits = int64(resultUnit)
-			if len(resultArr) == 2 {
-				currNanos := string(resultArr[1])
-				currLength := len(currNanos)
-				for currLength < 9 {
-					currNanos += "0"
-					currLength++
-				}
-				resultNanos, _ := strconv.Atoi(currNanos)
-				finalAmountNanos = int64(resultNanos)
-			} else {
-				finalAmountNanos = 0
 			}
 			finalAmountType = datastruct.CREDIT
 			if strings.Contains(result, "-") {
 				finalAmountType = datastruct.DEBIT
-				finalAmountUnits = int64(math.Abs(float64(finalAmountUnits)))
-				finalAmountNanos = int64(math.Abs(float64(finalAmountNanos)))
+				finalAmountUnits = int64(math.Abs(float64(fAU)))
+				finalAmountNanos = int64(math.Abs(float64(fAN)))
 			}
 		} else if oldExpense.Type == datastruct.DEBIT {
-			newExpUnits := strconv.Itoa(int(newExpenseUnits))
-			newExpNanos := strconv.Itoa(int(newExpenseNanos))
-			oldExpUnits := strconv.Itoa(int(oldExpenseUnits))
-			oldExpNanos := strconv.Itoa(int(oldExpenseNanos))
-			newExp := newExpUnits + "."
-			for i := len(newExpNanos); i < 9; i++ {
-				newExp += "0"
-			}
-			if strings.Contains(newExpNanos, "-") {
-				newExp += strings.Replace(newExpNanos, "-", "", 1)
-				temp := "-" + newExp
-				newExp = temp
-			} else {
-				newExp += newExpNanos
-			}
-			oldExp := oldExpUnits + "."
-			for i := len(oldExpNanos); i < 9; i++ {
-				oldExp += "0"
-			}
-			if strings.Contains(oldExpNanos, "-") {
-				oldExp += strings.Replace(oldExpNanos, "-", "", 1)
-				temp := "-" + oldExp
-				oldExp = temp
-			} else {
-				oldExp += oldExpNanos
-			}
-			decimal.DivisionPrecision = 9
-			newExpDec, err := decimal.NewFromString(newExp)
+			fAU, fAN, _, err := utils.Calculate(newExpenseUnits, oldExpenseUnits, newExpenseNanos, oldExpenseNanos, "sub")
 			if err != nil {
 				return nil, err
-			}
-			oldExpDec, err := decimal.NewFromString(oldExp)
-			if err != nil {
-				return nil, err
-			}
-			result := newExpDec.Sub(oldExpDec).String()
-			resultArr := strings.Split(result, ".")
-			// Set Nanos and Units
-			resultUnit, _ := strconv.Atoi(string(resultArr[0]))
-			finalAmountUnits = int64(resultUnit)
-			if len(resultArr) == 2 {
-				currNanos := string(resultArr[1])
-				currLength := len(currNanos)
-				for currLength < 9 {
-					currNanos += "0"
-					currLength++
-				}
-				resultNanos, _ := strconv.Atoi(currNanos)
-				finalAmountNanos = int64(resultNanos)
-				if strings.Contains(resultArr[0], "-") {
-					temp := -(finalAmountNanos)
-					finalAmountNanos = temp
-				}
-			} else {
-				finalAmountNanos = 0
 			}
 			finalAmountType = datastruct.DEBIT
+			finalAmountUnits = fAU
+			finalAmountNanos = fAN
 		}
 	} else if oldExpense.Type == datastruct.CREDIT && expenseData.Type == datastruct.DEBIT {
 		// If the old expense was Credit but was updated to debit
