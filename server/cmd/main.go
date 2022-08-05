@@ -6,6 +6,7 @@ import (
 	"net"
 	"net/http"
 	"os"
+	"strconv"
 
 	"github.com/NikhilSharma03/Okane/server/internal/app"
 	"github.com/NikhilSharma03/Okane/server/internal/repository"
@@ -28,7 +29,13 @@ func main() {
 	lg := log.New(os.Stdout, "okane-api", log.LstdFlags)
 
 	// Connect DB
-	dbClient := repository.ConnectDB()
+	redisAddress := os.Getenv("REDIS_ADDRESS")
+	redisPass := os.Getenv("REDIS_PASSWORD")
+	redisDB, err := strconv.Atoi(os.Getenv("REDIS_DB"))
+	if err != nil {
+		log.Fatalln("Failed to get REDIS_DB")
+	}
+	dbClient := repository.ConnectDB(redisAddress, redisPass, redisDB)
 	// Check if DB is connected
 	_, err = dbClient.Ping(context.Background()).Result()
 	if err != nil {

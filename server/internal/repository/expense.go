@@ -2,6 +2,7 @@ package repository
 
 import (
 	"context"
+	"encoding/json"
 	"fmt"
 	"time"
 
@@ -28,8 +29,12 @@ const (
 )
 
 func (*expenseCollection) CreateExpense(expense_data *datastruct.Expense) (*datastruct.Expense, error) {
+	expenseData, err := json.Marshal(expense_data)
+	if err != nil {
+		return nil, fmt.Errorf("failed to marshal expense data")
+	}
 	// Save the expense in the DB
-	_, err := DB.HSet(context.Background(), EXPENSE_COLLECTION, EXPENSE+expense_data.Id, expense_data).Result()
+	_, err = DB.HSet(context.Background(), EXPENSE_COLLECTION, EXPENSE+expense_data.Id, expenseData).Result()
 	if err != nil {
 		return nil, fmt.Errorf("failed to create a new expense")
 	}

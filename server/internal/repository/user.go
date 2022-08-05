@@ -3,12 +3,10 @@ package repository
 import (
 	"context"
 	"fmt"
-	"strconv"
-	"strings"
 
 	"github.com/NikhilSharma03/Okane/server/internal/datastruct"
+	"github.com/NikhilSharma03/Okane/server/internal/utils"
 	"github.com/go-redis/redis/v8"
-	"github.com/strongo/decimal"
 )
 
 // The UserCollection defines the methods a struct need to have
@@ -24,6 +22,7 @@ type UserCollection interface {
 const (
 	USERS_COLLECTION = "users"
 	USERS            = "users:"
+	MAX_NANOS        = 999999999
 )
 
 // The userCollection struct implements method as defined in UserCollection interface
@@ -66,7 +65,7 @@ func (*userCollection) GetUser(email string) (*datastruct.User, error) {
 	var foundUser datastruct.User
 	err = foundUser.Unmarshal(data)
 	if err != nil {
-		return nil, fmt.Errorf("failed to unmarshal found user")
+		return nil, fmt.Errorf("failed to unmarshal found user %v", err)
 	}
 
 	// If all correct return the found user
@@ -94,30 +93,23 @@ func (ur *userCollection) UpdateUserBalance(email string, expenseAmountUnits int
 	if err != nil {
 		return err
 	}
-
-	// Create float for calculation of Money type
-	userBalaceFloat := decimal.NewDecimal64p2(user.Balance.Units, int8(user.Balance.Nanos))
-	expenseAmountFloat := decimal.NewDecimal64p2(expenseAmountUnits, int8(expenseAmountNanos))
 	// Calculate user result balance
-	var resultBal decimal.Decimal64p2
+	var resultBalanceUnits int64
+	var resultBalanceNanos int64
 	if expenseType == datastruct.CREDIT {
-		resultBal = userBalaceFloat + expenseAmountFloat
+		resultBalanceUnits, resultBalanceNanos, _, err = utils.Calculate(user.Balance.Units, expenseAmountUnits, user.Balance.Nanos, expenseAmountNanos, "add")
+		if err != nil {
+			return err
+		}
 	} else if expenseType == datastruct.DEBIT {
-		resultBal = userBalaceFloat - expenseAmountFloat
+		resultBalanceUnits, resultBalanceNanos, _, err = utils.Calculate(user.Balance.Units, expenseAmountUnits, user.Balance.Nanos, expenseAmountNanos, "sub")
+		if err != nil {
+			return err
+		}
 	}
-	resBal := resultBal.String()
-	res := strings.Split(resBal, ".")
-	userBalUnits, _ := strconv.Atoi(res[0])
-	var userBalNanos int
-	if len(res) == 2 {
-		userBalNanos, _ = strconv.Atoi(res[1])
-	} else {
-		userBalNanos = 0
-	}
-
-	// Update user Balance in DB
+	// // Update user Balance in DB
 	newUser := datastruct.NewUser(user.ID, user.Name, user.Email, user.Password)
-	newUserBal := datastruct.NewBalance("USD", int64(userBalUnits), int32(userBalNanos))
+	newUserBal := datastruct.NewBalance("USD", int64(resultBalanceUnits), int32(resultBalanceNanos))
 	newUser.Balance = newUserBal
 	// Marshalling newUser to JSON
 	newUserJSON, err := newUser.ToJSON()
