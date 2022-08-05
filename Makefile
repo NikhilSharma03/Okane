@@ -10,3 +10,7 @@ gen-protobuf:
 # clean-protobuf removes generated .pb.go files
 clean-protobuf:
 	rm -rf server/pkg/protobuf
+
+# run-server starts the grpc server
+run-server:
+	go run server/cmd/main.go
