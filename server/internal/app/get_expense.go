@@ -8,6 +8,7 @@ import (
 	"google.golang.org/genproto/googleapis/type/money"
 )
 
+// Get Expense returns all the expenses by the provided user id
 func (es *ExpenseService) GetExpense(ctx context.Context, rq *okanepb.GetExpenseRequest) (*okanepb.GetExpenseResponse, error) {
 	// Extract token from request
 	token, ok := getCredFromMetadata(ctx, "token")

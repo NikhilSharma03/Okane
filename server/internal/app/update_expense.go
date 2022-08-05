@@ -9,6 +9,7 @@ import (
 	"google.golang.org/genproto/googleapis/type/money"
 )
 
+// Update Expense updates the expense by the provided expense id
 func (es *ExpenseService) UpdateExpenseByID(ctx context.Context, rq *okanepb.UpdateExpenseByIDRequest) (*okanepb.UpdateExpenseByIDResponse, error) {
 	// Extract token from request
 	token, ok := getCredFromMetadata(ctx, "token")
