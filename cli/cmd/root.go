@@ -24,6 +24,11 @@ var rootCmd = &cobra.Command{
  ✪ Debit from expenses
  ✪ Keep track of total amount present
  ✪ History of transactions   
+
+ Commands:
+ ✪ user - Do user related queries
+ ✪ expense - Do expense related queries
+ ✪ balance - Check balance
 `,
 }
 
