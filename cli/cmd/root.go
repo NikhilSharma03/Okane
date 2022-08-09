@@ -28,7 +28,6 @@ var rootCmd = &cobra.Command{
  Commands:
  ✪ user - Do user related queries
  ✪ expense - Do expense related queries
- ✪ balance - Check balance
 `,
 }
 
