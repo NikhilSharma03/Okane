@@ -58,6 +58,7 @@ Example:
 			os.Exit(1)
 		}
 		// Check for valid email
+		// TODO
 
 		fmt.Println(valName, valEmail, valPassword)
 	},
