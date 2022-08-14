@@ -1,3 +1,3 @@
 # Okane
 
-> A CLI Application to manage your expenses
+> CLI Application to manage your expenses
