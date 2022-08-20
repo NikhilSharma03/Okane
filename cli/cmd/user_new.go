@@ -10,7 +10,7 @@ import (
 )
 
 func init() {
-	// Add the new sub command to the user command
+	// Added the new sub command to the user command
 	userCmd.AddCommand(newCmd)
 }
 
