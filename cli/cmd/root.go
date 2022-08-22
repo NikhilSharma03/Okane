@@ -15,9 +15,9 @@ var rootCmd = &cobra.Command{
 	Use:   "okane",
 	Short: "A CLI application to manage expenses",
 	Long: `	
- Okane is an CLI application which helps to manage expenses.
+Okane is an CLI application which helps to manage expenses.
 	
- It has many functionalities such as
+It has many functionalities such as
  ✪ User Authentication
  ✪ Managing your expenses
  ✪ Credit to expenses 
@@ -25,7 +25,7 @@ var rootCmd = &cobra.Command{
  ✪ Keep track of total amount present
  ✪ History of transactions   
 
- Commands:
+Commands:
  ✪ user - Do user related queries
  ✪ expense - Do expense related queries
 `,
