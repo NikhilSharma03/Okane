@@ -76,23 +76,67 @@ func (lu *LoginUserData) Login(token, name, id, email, password, balance string)
 	if err != nil {
 		return err
 	}
+	var filePath string = "cli/cred.yaml"
+	path, err := os.Getwd()
+	if err != nil {
+		return fmt.Errorf("something went wrong while login")
+	}
+	pathLen := len(path)
+	lastPath := string(path[pathLen-3]) + string(path[pathLen-2]) + string(path[pathLen-1])
+	if lastPath == "cli" {
+		filePath = "cred.yaml"
+	} else if lastPath == "ane" {
+		filePath = "cli/cred.yaml"
+	} else {
+		return fmt.Errorf("please execute cli app from root dir or cli dir")
+	}
 
-	return ioutil.WriteFile("cli/cred.yaml", y, 0644)
+	return ioutil.WriteFile(filePath, y, 0644)
 }
 
 func (l *LoginUserData) LogOut() error {
-	return os.Remove("cli/cred.yaml")
+	var filePath string = "cli/cred.yaml"
+	path, err := os.Getwd()
+	if err != nil {
+		return fmt.Errorf("something went wrong while login")
+	}
+	pathLen := len(path)
+	lastPath := string(path[pathLen-3]) + string(path[pathLen-2]) + string(path[pathLen-1])
+	if lastPath == "cli" {
+		filePath = "cred.yaml"
+	} else if lastPath == "ane" {
+		filePath = "cli/cred.yaml"
+	} else {
+		return fmt.Errorf("please execute cli app from root dir or cli dir")
+	}
+	return os.Remove(filePath)
 }
 
 func (l *LoginUserData) GetData() (*LoginUserData, error) {
+	var filePath string = "cli/cred.yaml"
+	var confPath string = "./cli"
+	path, err := os.Getwd()
+	if err != nil {
+		return nil, fmt.Errorf("something went wrong while login")
+	}
+	pathLen := len(path)
+	lastPath := string(path[pathLen-3]) + string(path[pathLen-2]) + string(path[pathLen-1])
+	if lastPath == "cli" {
+		filePath = "cred.yaml"
+		confPath = "."
+	} else if lastPath == "ane" {
+		filePath = "cli/cred.yaml"
+	} else {
+		return nil, fmt.Errorf("please execute cli app from root dir or cli dir")
+	}
 	// Check if cred.yaml exists
-	_, err := os.Stat("cli/cred.yaml")
+	_, err = os.Stat(filePath)
 	if errors.Is(err, os.ErrNotExist) {
 		return nil, fmt.Errorf("please login")
 	}
 	// Get values from cred.yaml
 	viper.SetConfigName("cred")
-	viper.AddConfigPath("./cli")
+	viper.AddConfigPath(confPath)
 	err = viper.ReadInConfig()
 	if err != nil {
 		return nil, fmt.Errorf("failed to read cred file! please remove the cred file and login again")
