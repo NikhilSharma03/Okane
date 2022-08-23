@@ -14,3 +14,7 @@ clean-protobuf:
 # run-server starts the grpc server
 run-server:
 	go run server/cmd/main.go
+
+# build-cli builds the cli app
+build-cli:
+	cd cli; go build -o okane
