@@ -33,6 +33,7 @@ require (
 	github.com/spf13/cast v1.5.0 // indirect
 	github.com/spf13/jwalterweatherman v1.1.0 // indirect
 	github.com/spf13/pflag v1.0.5 // indirect
+	github.com/strongo/decimal v0.0.0-20180523215323-a1521d8f65fa // indirect
 	github.com/subosito/gotenv v1.3.0 // indirect
 	golang.org/x/term v0.0.0-20220722155259-a9ba230a4035 // indirect
 	gopkg.in/ini.v1 v1.66.4 // indirect

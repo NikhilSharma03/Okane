@@ -26,7 +26,7 @@ type UserData struct {
 	Password string `json:"password"`
 }
 
-type UserNewRespErr struct {
+type ResponseError struct {
 	Code    int    `json:"code"`
 	Message string `json:"message"`
 }
@@ -111,14 +111,14 @@ Example:
 		}
 		jsonStr := string(body)
 		if strings.Contains(jsonStr, "code") {
-			var resErr UserNewRespErr
+			var resErr ResponseError
 			err = json.Unmarshal([]byte(jsonStr), &resErr)
 			if err != nil {
 				log.Fatalf(err.Error())
 			}
-			w.PersistWith(spin.Spinner{Frames: []string{""}}, " !"+resErr.Message)
+			w.PersistWith(spin.Spinner{Frames: []string{""}}, resErr.Message)
 		} else {
-			w.PersistWith(spin.Spinner{Frames: []string{"👍"}}, " User Created Successfully!")
+			w.PersistWith(spin.Spinner{Frames: []string{"👍"}}, " User Created Successfully! You can login now !")
 		}
 	},
 }
