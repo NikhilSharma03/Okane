@@ -116,7 +116,7 @@ Example:
 			balance := decimal.NewDecimal64p2(int64(balUnit), int8(respData.UserData.Balance.Nanos))
 			err = loginUserData.Login(respData.Token, respData.UserData.Name, respData.UserData.ID, respData.UserData.Email, valPassword, balance.String()+" USD")
 			if err != nil {
-				log.Fatalf("Failed to update! %v", err.Error())
+				log.Fatalf("Failed to update new user detail! please manually delete cred file and login again")
 			}
 			w.PersistWith(spin.Spinner{Frames: []string{"👍"}}, " Updated User Details Successfully!")
 		}
