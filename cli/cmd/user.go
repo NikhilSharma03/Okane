@@ -1,10 +1,13 @@
 package cmd
 
 import (
+	"errors"
+	"fmt"
 	"io/ioutil"
 	"os"
 
 	"github.com/spf13/cobra"
+	"github.com/spf13/viper"
 	"gopkg.in/yaml.v2"
 )
 
@@ -79,4 +82,24 @@ func (lu *LoginUserData) Login(token, name, id, email, password, balance string)
 
 func (l *LoginUserData) LogOut() error {
 	return os.Remove("cli/cred.yaml")
+}
+
+func (l *LoginUserData) GetData() (*LoginUserData, error) {
+	// Check if cred.yaml exists
+	_, err := os.Stat("cli/cred.yaml")
+	if errors.Is(err, os.ErrNotExist) {
+		return nil, fmt.Errorf("please login")
+	}
+	// Get values from cred.yaml
+	viper.SetConfigName("cred")
+	viper.AddConfigPath("./cli")
+	err = viper.ReadInConfig()
+	if err != nil {
+		return nil, fmt.Errorf("failed to read cred file! please remove the cred file and login again")
+	}
+	err = viper.Unmarshal(l)
+	if err != nil {
+		return nil, fmt.Errorf("failed to unmarshal cred file! please remove the cred file and login again")
+	}
+	return l, nil
 }
