@@ -26,6 +26,7 @@ Example:
 	Run: func(cmd *cobra.Command, args []string) {
 		w := wow.New(os.Stdout, spin.Get(spin.Dots), " Logout...")
 		w.Start()
+		// Check if user has already login
 		userData, err := loginUserData.GetData()
 		if err != nil {
 			log.Fatalf(err.Error())

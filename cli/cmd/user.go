@@ -76,6 +76,8 @@ func (lu *LoginUserData) Login(token, name, id, email, password, balance string)
 	if err != nil {
 		return err
 	}
+
+	// generate path
 	var filePath string = "cli/cred.yaml"
 	path, err := os.Getwd()
 	if err != nil {
@@ -95,6 +97,7 @@ func (lu *LoginUserData) Login(token, name, id, email, password, balance string)
 }
 
 func (l *LoginUserData) LogOut() error {
+	// generate path
 	var filePath string = "cli/cred.yaml"
 	path, err := os.Getwd()
 	if err != nil {
@@ -113,6 +116,7 @@ func (l *LoginUserData) LogOut() error {
 }
 
 func (l *LoginUserData) GetData() (*LoginUserData, error) {
+	// generate path
 	var filePath string = "cli/cred.yaml"
 	var confPath string = "./cli"
 	path, err := os.Getwd()
