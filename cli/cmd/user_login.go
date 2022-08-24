@@ -8,14 +8,12 @@ import (
 	"net/http"
 	"os"
 	"regexp"
-	"strconv"
 	"strings"
 
 	"github.com/AlecAivazis/survey/v2"
 	"github.com/gernest/wow"
 	"github.com/gernest/wow/spin"
 	"github.com/spf13/cobra"
-	"github.com/strongo/decimal"
 )
 
 func init() {
@@ -29,16 +27,9 @@ type UserLoginResponse struct {
 }
 
 type UserLoginData struct {
-	ID      string       `json:"id"`
-	Name    string       `json:"name"`
-	Email   string       `json:"email"`
-	Balance UserLoginBal `json:"balance"`
-}
-
-type UserLoginBal struct {
-	CurrencyCode string `json:"currencyCode"`
-	Units        string `json:"units"`
-	Nanos        int32  `json:"nanos"`
+	ID    string `json:"id"`
+	Name  string `json:"name"`
+	Email string `json:"email"`
 }
 
 var loginCmd = &cobra.Command{
@@ -116,10 +107,7 @@ Example:
 			if err != nil {
 				log.Fatalf(err.Error())
 			}
-			// Gen Balance
-			balUnit, _ := strconv.Atoi(respData.UserData.Balance.Units)
-			balance := decimal.NewDecimal64p2(int64(balUnit), int8(respData.UserData.Balance.Nanos))
-			err = loginUserData.Login(respData.Token, respData.UserData.Name, respData.UserData.ID, respData.UserData.Email, valPassword, balance.String()+" USD")
+			err = loginUserData.Login(respData.Token, respData.UserData.Name, respData.UserData.ID, respData.UserData.Email, valPassword)
 			if err != nil {
 				log.Fatalf("Failed to login! %v", err.Error())
 			}
