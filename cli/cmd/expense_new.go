@@ -35,10 +35,10 @@ type ExpenseDataAmt struct {
 
 func init() {
 	// Added the new sub command to the expense command
-	expenseCmd.AddCommand(eNewCmd)
+	expenseCmd.AddCommand(expNewCmd)
 }
 
-var eNewCmd = &cobra.Command{
+var expNewCmd = &cobra.Command{
 	Use:   "new",
 	Short: "Create a new expense",
 	Long: `
@@ -165,7 +165,7 @@ Example:
 			log.Fatalf(err.Error())
 		}
 		jsonStr := string(body)
-		if strings.Contains(jsonStr, "code") {
+		if res.StatusCode == http.StatusInternalServerError {
 			var resErr ResponseError
 			err = json.Unmarshal([]byte(jsonStr), &resErr)
 			if err != nil {
