@@ -8,14 +8,12 @@ import (
 	"log"
 	"net/http"
 	"os"
-	"strconv"
 	"strings"
 
 	"github.com/AlecAivazis/survey/v2"
 	"github.com/gernest/wow"
 	"github.com/gernest/wow/spin"
 	"github.com/spf13/cobra"
-	"github.com/strongo/decimal"
 )
 
 func init() {
@@ -98,7 +96,7 @@ Example:
 		}
 		jsonStr := string(body)
 
-		if strings.Contains(jsonStr, "code") {
+		if res.StatusCode == http.StatusInternalServerError {
 			var resErr ResponseError
 			err = json.Unmarshal([]byte(jsonStr), &resErr)
 			if err != nil {
@@ -111,10 +109,7 @@ Example:
 			if err != nil {
 				log.Fatalf(err.Error())
 			}
-			// Gen Balance
-			balUnit, _ := strconv.Atoi(respData.UserData.Balance.Units)
-			balance := decimal.NewDecimal64p2(int64(balUnit), int8(respData.UserData.Balance.Nanos))
-			err = loginUserData.Login(respData.Token, respData.UserData.Name, respData.UserData.ID, respData.UserData.Email, valPassword, balance.String()+" USD")
+			err = loginUserData.Login(respData.Token, respData.UserData.Name, respData.UserData.ID, respData.UserData.Email, valPassword)
 			if err != nil {
 				log.Fatalf("Failed to update new user detail! please manually delete cred file and login again")
 			}

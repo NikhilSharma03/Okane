@@ -39,6 +39,5 @@ Example:
 		fmt.Println("UserID :", userData.ID)
 		fmt.Println("Name :", userData.Name)
 		fmt.Println("Email :", userData.Email)
-		fmt.Println("Balance :", userData.Balance)
 	},
 }

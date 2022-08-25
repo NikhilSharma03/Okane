@@ -58,18 +58,16 @@ type LoginUserData struct {
 	Name            string `yaml:"name"`
 	ID              string `yaml:"id"`
 	Email           string `yaml:"email"`
-	Balance         string `yaml:"balance"`
 	IsAuthenticated bool   `yaml:"is_authenticated"`
 }
 
 var loginUserData LoginUserData
 
-func (lu *LoginUserData) Login(token, name, id, email, password, balance string) error {
+func (lu *LoginUserData) Login(token, name, id, email, password string) error {
 	lu.Token = token
 	lu.Name = name
 	lu.ID = id
 	lu.Email = email
-	lu.Balance = balance
 	lu.IsAuthenticated = true
 
 	y, err := yaml.Marshal(lu)

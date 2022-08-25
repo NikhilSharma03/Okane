@@ -74,7 +74,7 @@ Example:
 		}
 		jsonStr := string(body)
 
-		if strings.Contains(jsonStr, "code") {
+		if res.StatusCode == http.StatusInternalServerError {
 			var resErr ResponseError
 			err = json.Unmarshal([]byte(jsonStr), &resErr)
 			if err != nil {
