@@ -25,15 +25,15 @@ Example:
 
 ✪ Get Single Expense
 Example:
-	okane expense get --id/-I {expense ID}  
+	okane expense get --id/-I {expenseID}  
  
 ✪ Update Single Expense
 Example:
- 	okane expense update --id/-I {expense ID}   
+ 	okane expense update --id/-I {expenseID}   
  
 ✪ Delete Single Expense
 Example:
- 	okane expense delete --id/-I {expense ID}   
+ 	okane expense delete --id/-I {expenseID}   
  
 `,
 }
