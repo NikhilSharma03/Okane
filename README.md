@@ -17,6 +17,8 @@
 
 > Okane is an CLI 💻 application build with Cobra Go🚀 to help managing your expenses 💵
 
+<br>
+
 ## Technology Stack
 
 <div align="center">  
