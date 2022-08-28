@@ -1,5 +1,20 @@
 # Okane
 
+<div align="center">  
+<br>
+
+<img width=100% src="https://github.com/NikhilSharma03/Okane/blob/main/assets/demo.gif"></p>
+
+</div>
+
+<div align="center">  
+<br>
+ 
+[![Open Source Love](https://badges.frapsoft.com/os/v1/open-source.svg?v=95)](https://github.com/NikhilSharma03/Okane) 
+[![Build by Nikhil](https://img.shields.io/badge/Built%20by-Nikhil-Green)](https://github.com/NikhilSharma03/Okane)
+
+</div>
+
 > Okane is an CLI 💻 application build with Cobra Go🚀 to help managing your expenses 💵
 
 ## Technology Stack
