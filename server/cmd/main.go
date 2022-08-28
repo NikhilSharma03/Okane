@@ -52,7 +52,7 @@ func main() {
 	// Starting gRPC server
 	go func() {
 		// Initialize Listener at Port 8001
-		listener, err := net.Listen("tcp", "localhost:8001")
+		listener, err := net.Listen("tcp", ":8001")
 		if err != nil {
 			log.Fatalln(err)
 		}
@@ -71,7 +71,7 @@ func main() {
 	// Client connection to the gRPC server
 	conn, err := grpc.DialContext(
 		context.Background(),
-		"localhost:8001",
+		":8001",
 		grpc.WithBlock(),
 		grpc.WithTransportCredentials(insecure.NewCredentials()),
 	)
@@ -91,7 +91,7 @@ func main() {
 	}
 
 	gwServer := &http.Server{
-		Addr:    "localhost:8000",
+		Addr:    ":8000",
 		Handler: gwmux,
 	}
 
