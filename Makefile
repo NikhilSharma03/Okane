@@ -1,20 +1,19 @@
-# gen-protobuf generates .pb.go for protobuf files
-gen-protobuf:
+.PHONY: generate-proto-protoc
+generate-proto-protoc:
 	protoc -I ./api \
 		--go_out ./pkg --go_opt paths=source_relative \
-  		--go-grpc_out ./pkg --go-grpc_opt paths=source_relative \
-  	   	--grpc-gateway_out ./pkg --grpc-gateway_opt paths=source_relative \
-  		./api/protobuf/*.proto ./api/google/api/*.proto ./api/google/type/*.proto
+		--go-grpc_out ./pkg --go-grpc_opt paths=source_relative \
+		--grpc-gateway_out ./pkg --grpc-gateway_opt paths=source_relative \
+		./api/protobuf/*.proto ./api/google/api/*.proto ./api/google/type/*.proto
 
+.PHONY: generate-proto
+generate-proto:
+	buf generate api
 
-# clean-protobuf removes generated .pb.go files
-clean-protobuf:
+.PHONY: clean-proto
+clean-proto:
 	rm -rf pkg/protobuf pkg/google
 
-# run-server starts the grpc server
+.PHONY: run-server
 run-server:
 	go run cmd/main.go
-
-# build-cli builds the cli app
-build-cli:
-	cd cli; go build -o okane; mv okane ./../okane-cli
