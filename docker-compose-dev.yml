@@ -1,0 +1,54 @@
+version: "3.9"
+
+services:
+  okane_api:
+    container_name: okane_api
+    build:
+      context: .
+      dockerfile: Dockerfile.dev
+
+    volumes:
+      - type: bind
+        source: .
+        target: /usr/src/app
+
+    ports:
+      - "8000:8000"
+
+    env_file:
+      - '.env'
+
+    links:
+      - redis
+
+    depends_on:
+      - redis
+
+    networks:
+      - backend
+
+    restart: unless-stopped
+
+  redis:
+    container_name: redis
+    image: redis:6.2-alpine
+
+    command: redis-server --save 20 1 --loglevel warning --requirepass foobar
+
+    volumes:
+      - redis_data:/data
+
+    ports:
+      - "6379:6379"
+
+    networks:
+      - backend
+
+    restart: unless-stopped
+
+
+volumes:
+  redis_data:
+
+networks:
+  backend:
