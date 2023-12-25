@@ -1,0 +1,18 @@
+ARG BUILD_IMAGE_TAG=1.19-bullseye
+
+FROM golang:${BUILD_IMAGE_TAG}
+
+WORKDIR /usr/src/app
+
+COPY go.mod go.sum .
+
+RUN go mod download
+
+RUN go install github.com/cosmtrek/air@latest && \
+    go install github.com/go-delve/delve/cmd/dlv@latest
+
+COPY . .
+
+EXPOSE 8000
+
+CMD ["air", "-c", ".air.toml"]
