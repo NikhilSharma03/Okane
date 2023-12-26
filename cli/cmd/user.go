@@ -3,7 +3,6 @@ package cmd
 import (
 	"errors"
 	"fmt"
-	"io/ioutil"
 	"os"
 
 	"github.com/spf13/cobra"
@@ -28,28 +27,28 @@ Example:
 
 ✪ Get User Balance
 Example:
-	okane user balance 
- 
+	okane user balance
+
 ✪ Create User
 Example:
-	okane user new   
+	okane user new
 
 ✪ Login User
 Example:
- 	okane user login  
+ 	okane user login
 
 ✪ Logout User
 Example:
-	okane user logout   
- 
+	okane user logout
+
 ✪ Update User
 Example:
- 	okane user update   
- 
+ 	okane user update
+
 ✪ Delete User
 Example:
- 	okane user delete   
- 
+ 	okane user delete
+
 `,
 }
 
@@ -91,7 +90,7 @@ func (lu *LoginUserData) Login(token, name, id, email, password string) error {
 		return fmt.Errorf("please execute cli app from root dir or cli dir")
 	}
 
-	return ioutil.WriteFile(filePath, y, 0644)
+	return os.WriteFile(filePath, y, 0644)
 }
 
 func (l *LoginUserData) LogOut() error {
@@ -141,11 +140,15 @@ func (l *LoginUserData) GetData() (*LoginUserData, error) {
 	viper.AddConfigPath(confPath)
 	err = viper.ReadInConfig()
 	if err != nil {
-		return nil, fmt.Errorf("failed to read cred file! please remove the cred file and login again")
+		return nil, fmt.Errorf(
+			"failed to read cred file! please remove the cred file and login again",
+		)
 	}
 	err = viper.Unmarshal(l)
 	if err != nil {
-		return nil, fmt.Errorf("failed to unmarshal cred file! please remove the cred file and login again")
+		return nil, fmt.Errorf(
+			"failed to unmarshal cred file! please remove the cred file and login again",
+		)
 	}
 	return l, nil
 }
