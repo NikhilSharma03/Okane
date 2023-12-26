@@ -2,7 +2,7 @@ package cmd
 
 import (
 	"encoding/json"
-	"io/ioutil"
+	"io"
 	"log"
 	"net/http"
 	"os"
@@ -23,11 +23,11 @@ var expDeleteCmd = &cobra.Command{
 	Short: "Delete single transaction",
 	Long: `
 The delete command is used to delete single transaction
- 
+
 Example:
 	okane expense delete --id/-I {expenseID}
 `,
-	Run: func(cmd *cobra.Command, args []string) {
+	Run: func(cmd *cobra.Command, _ []string) {
 		// Getting expense ID
 		expenseID, err := cmd.Flags().GetString("id")
 		if err != nil || expenseID == "" {
@@ -42,7 +42,11 @@ Example:
 		w := wow.New(os.Stdout, spin.Get(spin.Dots), " Deleting transaction...")
 		w.Start()
 		client := http.Client{}
-		req, err := http.NewRequest(http.MethodDelete, "http://localhost:8000/api/expense/"+expenseID, nil)
+		req, err := http.NewRequest(
+			http.MethodDelete,
+			"http://localhost:8000/api/expense/"+expenseID,
+			nil,
+		)
 		req.Header.Set("Grpc-metadata-token", userData.Token)
 		if err != nil {
 			log.Fatalf(err.Error())
@@ -51,7 +55,7 @@ Example:
 		if err != nil {
 			log.Fatalf(err.Error())
 		}
-		body, err := ioutil.ReadAll(res.Body)
+		body, err := io.ReadAll(res.Body)
 		if err != nil {
 			log.Fatalf(err.Error())
 		}
