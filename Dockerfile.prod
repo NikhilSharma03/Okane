@@ -12,7 +12,7 @@ RUN go mod download
 
 COPY . .
 
-RUN CGO_ENABLED=0 GOOS=linux go build -a -installsuffix cgo -o okane_server .
+RUN CGO_ENABLED=0 GOOS=linux go build -a -installsuffix cgo -o okane_server ./cmd
 
 # Production
 FROM scratch
