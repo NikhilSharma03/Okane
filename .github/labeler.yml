@@ -1,0 +1,23 @@
+area/docs:
+  - 'README.md'
+
+area/ci:
+  - '.github/**/*'
+
+area/cli:
+  - 'cli/**/*'
+
+area/server:
+  - 'api/**/*'
+  - 'cmd/**/*'
+  - 'internal/**/*'
+  - 'pkg/**/*'
+  - '.air.toml'
+  - '.dockerignore'
+  - 'buf.gen.yaml'
+  - 'buf.work.yaml'
+  - 'docker-compose-dev.yml'
+  - 'Dockerfile.dev'
+  - 'go.mod'
+  - 'go.sum'
+  - 'Makefile'
