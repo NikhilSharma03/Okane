@@ -4,6 +4,7 @@ import (
 	"errors"
 	"fmt"
 	"os"
+	"path/filepath"
 
 	"github.com/spf13/cobra"
 	"github.com/spf13/viper"
@@ -74,70 +75,51 @@ func (lu *LoginUserData) Login(token, name, id, email, password string) error {
 		return err
 	}
 
-	// generate path
-	var filePath string = "cli/cred.yaml"
-	path, err := os.Getwd()
+	homeDir, err := os.UserHomeDir()
 	if err != nil {
 		return fmt.Errorf("something went wrong while login")
 	}
-	pathLen := len(path)
-	lastPath := string(path[pathLen-3]) + string(path[pathLen-2]) + string(path[pathLen-1])
-	if lastPath == "cli" {
-		filePath = "cred.yaml"
-	} else if lastPath == "ane" {
-		filePath = "cli/cred.yaml"
-	} else {
-		return fmt.Errorf("please execute cli app from root dir or cli dir")
+
+	configDir := filepath.Join(homeDir, ".config", "okane")
+	err = os.MkdirAll(configDir, 0755)
+	if err != nil {
+		return fmt.Errorf("something went wrong while login")
 	}
+
+	filePath := filepath.Join(configDir, "cred.yml")
 
 	return os.WriteFile(filePath, y, 0644)
 }
 
 func (l *LoginUserData) LogOut() error {
-	// generate path
-	var filePath string = "cli/cred.yaml"
-	path, err := os.Getwd()
+	homeDir, err := os.UserHomeDir()
 	if err != nil {
-		return fmt.Errorf("something went wrong while login")
+		return fmt.Errorf("something went wrong while logout")
 	}
-	pathLen := len(path)
-	lastPath := string(path[pathLen-3]) + string(path[pathLen-2]) + string(path[pathLen-1])
-	if lastPath == "cli" {
-		filePath = "cred.yaml"
-	} else if lastPath == "ane" {
-		filePath = "cli/cred.yaml"
-	} else {
-		return fmt.Errorf("please execute cli app from root dir or cli dir")
-	}
+
+	filePath := filepath.Join(homeDir, ".config", "okane", "cred.yml")
+
 	return os.Remove(filePath)
 }
 
 func (l *LoginUserData) GetData() (*LoginUserData, error) {
-	// generate path
-	var filePath string = "cli/cred.yaml"
-	var confPath string = "./cli"
-	path, err := os.Getwd()
+	homeDir, err := os.UserHomeDir()
 	if err != nil {
-		return nil, fmt.Errorf("something went wrong while login")
+		return nil, fmt.Errorf("failed to read cred file ")
 	}
-	pathLen := len(path)
-	lastPath := string(path[pathLen-3]) + string(path[pathLen-2]) + string(path[pathLen-1])
-	if lastPath == "cli" {
-		filePath = "cred.yaml"
-		confPath = "."
-	} else if lastPath == "ane" {
-		filePath = "cli/cred.yaml"
-	} else {
-		return nil, fmt.Errorf("please execute cli app from root dir or cli dir")
-	}
+
+	configDir := filepath.Join(homeDir, ".config", "okane")
+	filePath := filepath.Join(configDir, "cred.yml")
+
 	// Check if cred.yaml exists
 	_, err = os.Stat(filePath)
 	if errors.Is(err, os.ErrNotExist) {
 		return nil, fmt.Errorf("please login")
 	}
-	// Get values from cred.yaml
+
 	viper.SetConfigName("cred")
-	viper.AddConfigPath(confPath)
+	viper.AddConfigPath(configDir)
+
 	err = viper.ReadInConfig()
 	if err != nil {
 		return nil, fmt.Errorf(
@@ -150,5 +132,6 @@ func (l *LoginUserData) GetData() (*LoginUserData, error) {
 			"failed to unmarshal cred file! please remove the cred file and login again",
 		)
 	}
+
 	return l, nil
 }

@@ -16,6 +16,18 @@ generate-proto:
 clean-proto:
 	rm -rf pkg/{protobuf,google}
 
+## CLI commands
+
+.PHONY: build-cli
+build-cli:
+	cd cli; go build -o okane_cli .; mv okane_cli ..
+
+## Server commands
+
+.PHONY: lint
+lint:
+	golangci-lint run ./...
+
 .PHONY: run-server
 run-server:
 	go run cmd/main.go

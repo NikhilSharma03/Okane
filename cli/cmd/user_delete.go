@@ -40,7 +40,10 @@ Example:
 		passPrompt := &survey.Password{
 			Message: "Please type your password (for authentication) :",
 		}
-		survey.AskOne(passPrompt, &password)
+		err = survey.AskOne(passPrompt, &password)
+		if err != nil {
+			log.Fatalf(err.Error())
+		}
 		// Validate data
 		valPassword := strings.TrimSpace(password)
 		// Check for empty field
