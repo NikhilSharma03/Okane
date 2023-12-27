@@ -3,7 +3,7 @@ package cmd
 import (
 	"encoding/json"
 	"fmt"
-	"io/ioutil"
+	"io"
 	"log"
 	"net/http"
 	"os"
@@ -45,9 +45,9 @@ var expHistoryCmd = &cobra.Command{
 	Short: "Get transaction history",
 	Long: `
 The history command is used to get transaction history
- 
+
 Example:
-	okane expense history 
+	okane expense history
 `,
 	Run: func(cmd *cobra.Command, args []string) {
 		// Check if user is logged in
@@ -68,7 +68,7 @@ Example:
 		if err != nil {
 			log.Fatalf(err.Error())
 		}
-		body, err := ioutil.ReadAll(res.Body)
+		body, err := io.ReadAll(res.Body)
 		if err != nil {
 			log.Fatalf(err.Error())
 		}

@@ -4,7 +4,7 @@ import (
 	"bytes"
 	"encoding/json"
 	"fmt"
-	"io/ioutil"
+	"io"
 	"log"
 	"net/http"
 	"os"
@@ -41,9 +41,9 @@ var newCmd = &cobra.Command{
 	Short: "Create a new user",
 	Long: `
 The new command is used to create a new user
- 
+
 Example:
-	okane user new 
+	okane user new
 `,
 	Run: func(cmd *cobra.Command, args []string) {
 		// Getting user name
@@ -113,7 +113,7 @@ Example:
 		}
 		defer resp.Body.Close()
 
-		body, err = ioutil.ReadAll(resp.Body)
+		body, err = io.ReadAll(resp.Body)
 		if err != nil {
 			log.Fatalf(err.Error())
 		}
