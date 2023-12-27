@@ -3,7 +3,7 @@ package cmd
 import (
 	"encoding/json"
 	"fmt"
-	"io/ioutil"
+	"io"
 	"log"
 	"net/http"
 	"os"
@@ -30,7 +30,7 @@ var expGetCmd = &cobra.Command{
 	Short: "Get single transaction details",
 	Long: `
 The get command is used to get single transaction details
- 
+
 Example:
 	okane expense get --id/-I {expenseID}
 `,
@@ -58,7 +58,7 @@ Example:
 		if err != nil {
 			log.Fatalf(err.Error())
 		}
-		body, err := ioutil.ReadAll(res.Body)
+		body, err := io.ReadAll(res.Body)
 		if err != nil {
 			log.Fatalf(err.Error())
 		}

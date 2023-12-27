@@ -3,7 +3,7 @@ package cmd
 import (
 	"encoding/json"
 	"fmt"
-	"io/ioutil"
+	"io"
 	"log"
 	"net/http"
 	"os"
@@ -37,9 +37,9 @@ var loginCmd = &cobra.Command{
 	Short: "Login as a user",
 	Long: `
 The login command is used to login as a user
- 
+
 Example:
-	okane user login 
+	okane user login
 `,
 	Run: func(cmd *cobra.Command, args []string) {
 		// Getting user email
@@ -94,7 +94,7 @@ Example:
 		if err != nil {
 			log.Fatalf(err.Error())
 		}
-		body, err := ioutil.ReadAll(res.Body)
+		body, err := io.ReadAll(res.Body)
 		if err != nil {
 			log.Fatalf(err.Error())
 		}

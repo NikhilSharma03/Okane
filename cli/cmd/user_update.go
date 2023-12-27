@@ -4,7 +4,7 @@ import (
 	"bytes"
 	"encoding/json"
 	"fmt"
-	"io/ioutil"
+	"io"
 	"log"
 	"net/http"
 	"os"
@@ -32,9 +32,9 @@ var updateCmd = &cobra.Command{
 	Short: "Update user details",
 	Long: `
 The update command is used to update current login user details
- 
+
 Example:
-	okane user update 
+	okane user update
 `,
 	Run: func(cmd *cobra.Command, args []string) {
 		// Check if user is login
@@ -96,7 +96,7 @@ Example:
 		if err != nil {
 			log.Fatalf(err.Error())
 		}
-		body, err = ioutil.ReadAll(res.Body)
+		body, err = io.ReadAll(res.Body)
 		if err != nil {
 			log.Fatalf(err.Error())
 		}

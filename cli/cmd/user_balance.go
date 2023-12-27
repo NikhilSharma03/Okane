@@ -3,7 +3,7 @@ package cmd
 import (
 	"encoding/json"
 	"fmt"
-	"io/ioutil"
+	"io"
 	"log"
 	"net/http"
 	"os"
@@ -41,9 +41,9 @@ var balanceCmd = &cobra.Command{
 	Short: "Shows user balance",
 	Long: `
 The balance command is used to see current login user balance
- 
+
 Example:
-	okane user balance 
+	okane user balance
 `,
 	Run: func(cmd *cobra.Command, args []string) {
 		// Check if user has already login
@@ -87,7 +87,7 @@ Example:
 		if err != nil {
 			log.Fatalf(err.Error())
 		}
-		body, err := ioutil.ReadAll(res.Body)
+		body, err := io.ReadAll(res.Body)
 		if err != nil {
 			log.Fatalf(err.Error())
 		}

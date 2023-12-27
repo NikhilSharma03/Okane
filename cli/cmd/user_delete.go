@@ -3,7 +3,7 @@ package cmd
 import (
 	"encoding/json"
 	"fmt"
-	"io/ioutil"
+	"io"
 	"log"
 	"net/http"
 	"os"
@@ -25,9 +25,9 @@ var deleteCmd = &cobra.Command{
 	Short: "Delete user",
 	Long: `
 The delete command is used to delete the current login user
- 
+
 Example:
-	okane user delete 
+	okane user delete
 `,
 	Run: func(cmd *cobra.Command, args []string) {
 		// Check if user is login
@@ -71,7 +71,7 @@ Example:
 		if err != nil {
 			log.Fatalf(err.Error())
 		}
-		body, err := ioutil.ReadAll(res.Body)
+		body, err := io.ReadAll(res.Body)
 		if err != nil {
 			log.Fatalf(err.Error())
 		}
