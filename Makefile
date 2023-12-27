@@ -1,7 +1,7 @@
 ## Proto files commands
-
 .PHONY: generate-proto-protoc
 generate-proto-protoc:
+	@echo "Generating proto files"
 	protoc -I ./api \
 		--go_out ./pkg --go_opt paths=source_relative \
 		--go-grpc_out ./pkg --go-grpc_opt paths=source_relative \
@@ -10,26 +10,34 @@ generate-proto-protoc:
 
 .PHONY: generate-proto
 generate-proto:
+	@echo "Generating proto files using buf"
 	buf generate api
 
 .PHONY: clean-proto
 clean-proto:
+	@echo "Cleaning generated proto files"
 	rm -rf pkg/{protobuf,google}
 
 ## CLI commands
-
 .PHONY: build-cli
 build-cli:
-	cd cli; go build -o okane_cli .; mv okane_cli ..
+	@echo "Building okane cli app"
+	go build -o okane_cli ./cli
+
+.PHONY: rm-cli
+rm-cli:
+	@echo "Removing okane cli app"
+	rm -rf okane_cli
 
 ## Server commands
-
 .PHONY: lint
 lint:
+	@echo "Linting code using golangci-lint"
 	golangci-lint run ./...
 
 .PHONY: run-server
 run-server:
+	@echo "Starting Okane server"
 	go run cmd/main.go
 
 ## Development Server docker-compose commands
