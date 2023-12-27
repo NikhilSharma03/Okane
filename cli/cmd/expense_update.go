@@ -33,11 +33,11 @@ var expUpdateCmd = &cobra.Command{
 	Short: "Update single transaction details",
 	Long: `
 The update command is used to update single transaction details
- 
+
 Example:
 	okane expense update --id/-I {expenseID}
 `,
-	Run: func(cmd *cobra.Command, args []string) {
+	Run: func(cmd *cobra.Command, _ []string) {
 		// Getting expense ID
 		expenseID, err := cmd.Flags().GetString("id")
 		if err != nil || expenseID == "" {
@@ -105,27 +105,38 @@ Example:
 			titlePrompt := &survey.Input{
 				Message: "Please type expense title (current : " + Title + ") :",
 			}
-			survey.AskOne(titlePrompt, &title)
+			err = survey.AskOne(titlePrompt, &title)
+			if err != nil {
+				log.Fatalf(err.Error())
+			}
 			// Getting expense description
 			var description string
 			descriptionPrompt := &survey.Input{
 				Message: "Please type expense description (current : " + Description + ") :",
 			}
-			survey.AskOne(descriptionPrompt, &description)
+			err = survey.AskOne(descriptionPrompt, &description)
+			if err != nil {
+				log.Fatalf(err.Error())
+			}
 			// Getting expense amount
 			var amount string
 			amountPrompt := &survey.Input{
 				Message: "Please type expense amount (USD) (current : " + Amount + ") :",
 			}
-			survey.AskOne(amountPrompt, &amount)
+			err = survey.AskOne(amountPrompt, &amount)
+			if err != nil {
+				log.Fatalf(err.Error())
+			}
 			// Getting expense type
 			expType := ""
 			expTypePrompt := &survey.Select{
 				Message: "Choose expense type (current : " + Type + ") :",
 				Options: []string{"Credit", "Debit"},
 			}
-			survey.AskOne(expTypePrompt, &expType)
-			// Validate data
+			err = survey.AskOne(expTypePrompt, &expType)
+			if err != nil {
+				log.Fatalf(err.Error())
+			}
 			valTitle := strings.TrimSpace(title)
 			valDescription := strings.TrimSpace(description)
 			valAmount := strings.TrimSpace(amount)

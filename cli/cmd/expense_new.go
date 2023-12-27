@@ -43,11 +43,11 @@ var expNewCmd = &cobra.Command{
 	Short: "Create a new expense",
 	Long: `
 The new command is used to create a new expense
- 
+
 Example:
-	okane expense new 
+	okane expense new
 `,
-	Run: func(cmd *cobra.Command, args []string) {
+	Run: func(_ *cobra.Command, _ []string) {
 		// Check if user is logged in
 		userData, err := loginUserData.GetData()
 		if err != nil {
@@ -58,26 +58,38 @@ Example:
 		titlePrompt := &survey.Input{
 			Message: "Please type expense title :",
 		}
-		survey.AskOne(titlePrompt, &title)
+		err = survey.AskOne(titlePrompt, &title)
+		if err != nil {
+			log.Fatalf(err.Error())
+		}
 		// Getting expense description
 		var description string
 		descriptionPrompt := &survey.Input{
 			Message: "Please type expense description :",
 		}
-		survey.AskOne(descriptionPrompt, &description)
+		err = survey.AskOne(descriptionPrompt, &description)
+		if err != nil {
+			log.Fatalf(err.Error())
+		}
 		// Getting expense amount
 		var amount string
 		amountPrompt := &survey.Input{
 			Message: "Please type expense amount (USD) :",
 		}
-		survey.AskOne(amountPrompt, &amount)
+		err = survey.AskOne(amountPrompt, &amount)
+		if err != nil {
+			log.Fatalf(err.Error())
+		}
 		// Getting expense type
 		expType := ""
 		expTypePrompt := &survey.Select{
 			Message: "Choose expense type:",
 			Options: []string{"Credit", "Debit"},
 		}
-		survey.AskOne(expTypePrompt, &expType)
+		err = survey.AskOne(expTypePrompt, &expType)
+		if err != nil {
+			log.Fatalf(err.Error())
+		}
 		// Validate data
 		valTitle := strings.TrimSpace(title)
 		valDescription := strings.TrimSpace(description)

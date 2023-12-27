@@ -48,13 +48,19 @@ Example:
 		namePrompt := &survey.Input{
 			Message: "Please type your name (to update) :",
 		}
-		survey.AskOne(namePrompt, &name)
+		err = survey.AskOne(namePrompt, &name)
+		if err != nil {
+			log.Fatalf(err.Error())
+		}
 		// Getting user password
 		var password string
 		passPrompt := &survey.Password{
 			Message: "Please type your password (for authentication) :",
 		}
-		survey.AskOne(passPrompt, &password)
+		err = survey.AskOne(passPrompt, &password)
+		if err != nil {
+			log.Fatalf(err.Error())
+		}
 		// Validate data
 		valName := strings.TrimSpace(name)
 		valPassword := strings.TrimSpace(password)

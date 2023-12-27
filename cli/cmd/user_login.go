@@ -47,13 +47,19 @@ Example:
 		emailPrompt := &survey.Input{
 			Message: "Please type your email (email@okane.com) :",
 		}
-		survey.AskOne(emailPrompt, &email)
+		err := survey.AskOne(emailPrompt, &email)
+		if err != nil {
+			log.Fatalf(err.Error())
+		}
 		// Getting user password
 		var password string
 		passPrompt := &survey.Password{
 			Message: "Please type your password (min length: 6) :",
 		}
-		survey.AskOne(passPrompt, &password)
+		err = survey.AskOne(passPrompt, &password)
+		if err != nil {
+			log.Fatalf(err.Error())
+		}
 		// Validate data
 		valEmail := strings.ToLower(strings.TrimSpace(email))
 		valPassword := strings.TrimSpace(password)
