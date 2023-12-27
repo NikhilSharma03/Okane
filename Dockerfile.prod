@@ -1,0 +1,32 @@
+ARG BUILD_IMAGE_TAG=1.19-bullseye
+
+FROM golang:${BUILD_IMAGE_TAG} AS build
+
+RUN useradd -u 1001 nonroot
+
+WORKDIR /usr/src/app
+
+COPY go.mod go.sum ./
+
+RUN go mod download
+
+COPY . .
+
+RUN CGO_ENABLED=0 GOOS=linux go build -a -installsuffix cgo -o okane_server .
+
+# Production
+FROM scratch
+
+ENV GIN_MODE=release
+
+WORKDIR /usr/src/app
+
+COPY --from=build /etc/passwd /etc/passwd
+
+COPY --from=build /usr/src/app/okane_server /usr/src/app/okane_server
+
+USER nonroot
+
+EXPOSE 8000
+
+CMD ["./okane_server"]
