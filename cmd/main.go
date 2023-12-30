@@ -91,8 +91,15 @@ func main() {
 		log.Fatalln("Failed to register expense handler:", err)
 	}
 
+	port := ":8000"
+	if envPort := os.Getenv("PORT"); envPort != "" {
+		port = ":" + envPort
+	}
+
+	fmt.Println("Starting server on PORT", port)
+
 	gwServer := &http.Server{
-		Addr:    ":8000",
+		Addr:    port,
 		Handler: gwmux,
 	}
 
