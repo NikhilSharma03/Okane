@@ -49,7 +49,7 @@ Example:
 		w := wow.New(os.Stdout, spin.Get(spin.Dots), " Fetching transaction details...")
 		w.Start()
 		client := http.Client{}
-		req, err := http.NewRequest(http.MethodGet, "http://localhost:8000/api/expense/"+expenseID, nil)
+		req, err := http.NewRequest(http.MethodGet, "https://okane-production.up.railway.app/api/expense/"+expenseID, nil)
 		req.Header.Set("Grpc-metadata-token", userData.Token)
 		if err != nil {
 			log.Fatalf(err.Error())

@@ -1,6 +1,7 @@
 package cmd
 
 import (
+	"bytes"
 	"encoding/json"
 	"fmt"
 	"io"
@@ -16,38 +17,50 @@ import (
 	"github.com/spf13/cobra"
 )
 
+type UserNewRequest struct {
+	UserData *UserData `json:"user_data"`
+}
+type UserData struct {
+	Name     string `json:"name"`
+	Email    string `json:"email"`
+	Password string `json:"password"`
+}
+
+type ResponseError struct {
+	Code    int    `json:"code"`
+	Message string `json:"message"`
+}
+
 func init() {
-	// Added the login sub command to the user command
-	userCmd.AddCommand(loginCmd)
+	// Added the new sub command to the user command
+	userCmd.AddCommand(newCmd)
 }
 
-type UserLoginResponse struct {
-	Token    string        `json:"token"`
-	UserData UserLoginData `json:"userData"`
-}
-
-type UserLoginData struct {
-	ID    string `json:"id"`
-	Name  string `json:"name"`
-	Email string `json:"email"`
-}
-
-var loginCmd = &cobra.Command{
-	Use:   "login",
-	Short: "Login as a user",
+var newCmd = &cobra.Command{
+	Use:   "new",
+	Short: "Create a new user",
 	Long: `
-The login command is used to login as a user
+The new command is used to create a new user
 
 Example:
-	okane user login
+	okane user new
 `,
 	Run: func(cmd *cobra.Command, args []string) {
+		// Getting user name
+		var name string
+		namePrompt := &survey.Input{
+			Message: "Please type your name :",
+		}
+		err := survey.AskOne(namePrompt, &name)
+		if err != nil {
+			log.Fatalf(err.Error())
+		}
 		// Getting user email
 		var email string
 		emailPrompt := &survey.Input{
 			Message: "Please type your email (email@okane.com) :",
 		}
-		err := survey.AskOne(emailPrompt, &email)
+		err = survey.AskOne(emailPrompt, &email)
 		if err != nil {
 			log.Fatalf(err.Error())
 		}
@@ -61,10 +74,11 @@ Example:
 			log.Fatalf(err.Error())
 		}
 		// Validate data
+		valName := strings.TrimSpace(name)
 		valEmail := strings.ToLower(strings.TrimSpace(email))
 		valPassword := strings.TrimSpace(password)
 		// Check for empty field
-		if valEmail == "" || valPassword == "" {
+		if valName == "" || valEmail == "" || valPassword == "" {
 			fmt.Println("Empty input found. Please type correct information.")
 			os.Exit(1)
 		}
@@ -80,27 +94,31 @@ Example:
 			os.Exit(1)
 		}
 		// Make API Request
-		w := wow.New(os.Stdout, spin.Get(spin.Dots), " Login user...")
+		w := wow.New(os.Stdout, spin.Get(spin.Dots), " Creating new user...")
 		w.Start()
-		client := http.Client{}
-		req, err := http.NewRequest("GET", "http://localhost:8000/api/user/"+valEmail, nil)
+		reqBody := &UserNewRequest{
+			UserData: &UserData{
+				Name:     valName,
+				Email:    valEmail,
+				Password: valPassword,
+			},
+		}
+		body, err := json.Marshal(reqBody)
+		if err != nil {
+			log.Fatalf("Failed to marshal user request body")
+		}
+		resp, err := http.Post("https://okane-production.up.railway.app/api/user", "application/json", bytes.NewBuffer(body))
 		if err != nil {
 			log.Fatalf(err.Error())
 		}
-		req.Header = http.Header{
-			"Grpc-metadata-cred": {valPassword},
-		}
-		res, err := client.Do(req)
-		if err != nil {
-			log.Fatalf(err.Error())
-		}
-		body, err := io.ReadAll(res.Body)
+		defer resp.Body.Close()
+
+		body, err = io.ReadAll(resp.Body)
 		if err != nil {
 			log.Fatalf(err.Error())
 		}
 		jsonStr := string(body)
-
-		if res.StatusCode == http.StatusInternalServerError {
+		if resp.StatusCode == http.StatusInternalServerError {
 			var resErr ResponseError
 			err = json.Unmarshal([]byte(jsonStr), &resErr)
 			if err != nil {
@@ -108,16 +126,7 @@ Example:
 			}
 			w.PersistWith(spin.Spinner{Frames: []string{""}}, resErr.Message)
 		} else {
-			var respData UserLoginResponse
-			err = json.Unmarshal([]byte(jsonStr), &respData)
-			if err != nil {
-				log.Fatalf(err.Error())
-			}
-			err = loginUserData.Login(respData.Token, respData.UserData.Name, respData.UserData.ID, respData.UserData.Email, valPassword)
-			if err != nil {
-				log.Fatalf("Failed to login! %v", err.Error())
-			}
-			w.PersistWith(spin.Spinner{Frames: []string{"👍"}}, " Login Successfully!")
+			w.PersistWith(spin.Spinner{Frames: []string{"👍"}}, " User Created Successfully! You can login now !")
 		}
 	},
 }

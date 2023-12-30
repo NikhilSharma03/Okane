@@ -1,11 +1,12 @@
 area/docs:
   - 'README.md'
+  - 'assets/**/*'
 
 area/ci:
   - '.github/**/*'
 
 area/cli:
-  - 'cli/**/*'
+  - 'okanecli/**/*'
 
 area/server:
   - 'api/**/*'

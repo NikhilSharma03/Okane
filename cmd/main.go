@@ -2,7 +2,6 @@ package main
 
 import (
 	"context"
-	"fmt"
 	"log"
 	"net"
 	"net/http"
@@ -23,7 +22,7 @@ func main() {
 	// Initialize environmental variables
 	err := godotenv.Load()
 	if err != nil {
-		fmt.Println("Error loading .env file")
+		log.Println("Error loading .env file")
 	}
 
 	// Initialize logger
@@ -96,13 +95,11 @@ func main() {
 		port = ":" + envPort
 	}
 
-	fmt.Println("Starting server on PORT", port)
-
 	gwServer := &http.Server{
 		Addr:    port,
 		Handler: gwmux,
 	}
 
-	log.Println("Serving gRPC-Gateway on :8000")
+	log.Println("Serving gRPC-Gateway on", port)
 	log.Fatalln(gwServer.ListenAndServe())
 }

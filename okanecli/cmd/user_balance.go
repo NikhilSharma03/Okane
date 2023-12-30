@@ -76,7 +76,7 @@ Example:
 		w := wow.New(os.Stdout, spin.Get(spin.Dots), " Fetching user balance...")
 		w.Start()
 		client := http.Client{}
-		req, err := http.NewRequest("GET", "http://localhost:8000/api/user/"+userData.Email, nil)
+		req, err := http.NewRequest("GET", "https://okane-production.up.railway.app/api/user/"+userData.Email, nil)
 		if err != nil {
 			log.Fatalf(err.Error())
 		}

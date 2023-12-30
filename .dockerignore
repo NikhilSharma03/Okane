@@ -1,12 +1,15 @@
 # git dir
+
 .git
 .github
 assets
 
 # environment vars
+
 .env
 .env.dev
 .env.prod
 
 # CLI dir
-cli
+
+okanecli

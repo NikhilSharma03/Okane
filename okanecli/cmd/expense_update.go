@@ -50,7 +50,7 @@ Example:
 		}
 		// Make API Request
 		client := http.Client{}
-		req, err := http.NewRequest(http.MethodGet, "http://localhost:8000/api/expense/"+expenseID, nil)
+		req, err := http.NewRequest(http.MethodGet, "https://okane-production.up.railway.app/api/expense/"+expenseID, nil)
 		req.Header.Set("Grpc-metadata-token", userData.Token)
 		if err != nil {
 			log.Fatalf(err.Error())
@@ -208,7 +208,7 @@ Example:
 				log.Fatalf("Failed to marshal expense request body")
 			}
 			client := http.Client{}
-			req, err := http.NewRequest(http.MethodPatch, "http://localhost:8000/api/expense/"+expenseID, bytes.NewBuffer(body))
+			req, err := http.NewRequest(http.MethodPatch, "https://okane-production.up.railway.app/api/expense/"+expenseID, bytes.NewBuffer(body))
 			req.Header.Set("Content-Type", "application/json")
 			req.Header.Set("Grpc-metadata-token", userData.Token)
 			if err != nil {

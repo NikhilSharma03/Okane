@@ -1,13 +1,13 @@
 package cmd
 
 import (
-	"bytes"
 	"encoding/json"
 	"fmt"
 	"io"
 	"log"
 	"net/http"
 	"os"
+	"regexp"
 	"strings"
 
 	"github.com/AlecAivazis/survey/v2"
@@ -17,56 +17,61 @@ import (
 )
 
 func init() {
-	// Added the update sub command to the user command
-	userCmd.AddCommand(updateCmd)
+	// Added the login sub command to the user command
+	userCmd.AddCommand(loginCmd)
 }
 
-type UpdateUserRequest struct {
-	Email    string `json:"email"`
-	Name     string `json:"name"`
-	Password string `json:"password"`
+type UserLoginResponse struct {
+	Token    string        `json:"token"`
+	UserData UserLoginData `json:"userData"`
 }
 
-var updateCmd = &cobra.Command{
-	Use:   "update",
-	Short: "Update user details",
+type UserLoginData struct {
+	ID    string `json:"id"`
+	Name  string `json:"name"`
+	Email string `json:"email"`
+}
+
+var loginCmd = &cobra.Command{
+	Use:   "login",
+	Short: "Login as a user",
 	Long: `
-The update command is used to update current login user details
+The login command is used to login as a user
 
 Example:
-	okane user update
+	okane user login
 `,
 	Run: func(cmd *cobra.Command, args []string) {
-		// Check if user is login
-		userData, err := loginUserData.GetData()
-		if err != nil {
-			log.Fatalf(err.Error())
-		}
-		// Get updated values
 		// Getting user email
-		var name string
-		namePrompt := &survey.Input{
-			Message: "Please type your name (to update) :",
+		var email string
+		emailPrompt := &survey.Input{
+			Message: "Please type your email (email@okane.com) :",
 		}
-		err = survey.AskOne(namePrompt, &name)
+		err := survey.AskOne(emailPrompt, &email)
 		if err != nil {
 			log.Fatalf(err.Error())
 		}
 		// Getting user password
 		var password string
 		passPrompt := &survey.Password{
-			Message: "Please type your password (for authentication) :",
+			Message: "Please type your password (min length: 6) :",
 		}
 		err = survey.AskOne(passPrompt, &password)
 		if err != nil {
 			log.Fatalf(err.Error())
 		}
 		// Validate data
-		valName := strings.TrimSpace(name)
+		valEmail := strings.ToLower(strings.TrimSpace(email))
 		valPassword := strings.TrimSpace(password)
 		// Check for empty field
-		if valName == "" || valPassword == "" {
+		if valEmail == "" || valPassword == "" {
 			fmt.Println("Empty input found. Please type correct information.")
+			os.Exit(1)
+		}
+		// Check for valid email
+		emailRegex := regexp.MustCompile(`^[a-z0-9._%+\-]+@okane.com$`)
+		if !emailRegex.MatchString(valEmail) {
+			fmt.Println("Invalid email. (please use email@okane.com format)")
 			os.Exit(1)
 		}
 		// Check for password length
@@ -75,28 +80,21 @@ Example:
 			os.Exit(1)
 		}
 		// Make API Request
-		w := wow.New(os.Stdout, spin.Get(spin.Dots), " Updating user...")
+		w := wow.New(os.Stdout, spin.Get(spin.Dots), " Login user...")
 		w.Start()
-		reqBody := &UpdateUserRequest{
-			Email:    userData.Email,
-			Name:     valName,
-			Password: valPassword,
-		}
-		body, err := json.Marshal(reqBody)
-		if err != nil {
-			log.Fatalf("Failed to marshal user request body")
-		}
 		client := http.Client{}
-		req, err := http.NewRequest(http.MethodPatch, "http://localhost:8000/api/user/"+userData.Email, bytes.NewBuffer(body))
-		req.Header.Set("Content-Type", "application/json")
+		req, err := http.NewRequest("GET", "https://okane-production.up.railway.app/api/user/"+valEmail, nil)
 		if err != nil {
 			log.Fatalf(err.Error())
+		}
+		req.Header = http.Header{
+			"Grpc-metadata-cred": {valPassword},
 		}
 		res, err := client.Do(req)
 		if err != nil {
 			log.Fatalf(err.Error())
 		}
-		body, err = io.ReadAll(res.Body)
+		body, err := io.ReadAll(res.Body)
 		if err != nil {
 			log.Fatalf(err.Error())
 		}
@@ -117,9 +115,9 @@ Example:
 			}
 			err = loginUserData.Login(respData.Token, respData.UserData.Name, respData.UserData.ID, respData.UserData.Email, valPassword)
 			if err != nil {
-				log.Fatalf("Failed to update new user detail! please manually delete cred file and login again")
+				log.Fatalf("Failed to login! %v", err.Error())
 			}
-			w.PersistWith(spin.Spinner{Frames: []string{"👍"}}, " Updated User Details Successfully!")
+			w.PersistWith(spin.Spinner{Frames: []string{"👍"}}, " Login Successfully!")
 		}
 	},
 }

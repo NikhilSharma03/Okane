@@ -162,7 +162,7 @@ Example:
 			log.Fatalf("Failed to marshal expense request body")
 		}
 		client := http.Client{}
-		req, err := http.NewRequest(http.MethodPost, "http://localhost:8000/api/expense", bytes.NewBuffer(body))
+		req, err := http.NewRequest(http.MethodPost, "https://okane-production.up.railway.app/api/expense", bytes.NewBuffer(body))
 		req.Header.Set("Content-Type", "application/json")
 		req.Header.Set("Grpc-metadata-token", userData.Token)
 		if err != nil {

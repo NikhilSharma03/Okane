@@ -22,7 +22,7 @@ clean-proto:
 .PHONY: build-cli
 build-cli:
 	@echo "Building okane cli app"
-	go build -o okane_cli ./cli
+	go build -o okane_cli ./okanecli
 
 .PHONY: rm-cli
 rm-cli:

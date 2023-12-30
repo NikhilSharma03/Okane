@@ -44,7 +44,7 @@ Example:
 		client := http.Client{}
 		req, err := http.NewRequest(
 			http.MethodDelete,
-			"http://localhost:8000/api/expense/"+expenseID,
+			"https://okane-production.up.railway.app/api/expense/"+expenseID,
 			nil,
 		)
 		req.Header.Set("Grpc-metadata-token", userData.Token)
