@@ -33,6 +33,16 @@ src="https://img.shields.io/badge/redis%20-%231572B6.svg?&color=red&style=for-th
 
 <br>
 
+## Install CLI
+
+```
+go install github.com/NikhilSharma03/Okane/okanecli@latest
+```
+
+Now you can access CLI app using `okanecli` in your terminal
+
+<br>
+
 ## Setup and Installation
 
 First install `Protocol compiler`
@@ -56,6 +66,12 @@ Then, add GOPATH in `.bashrc` file
 ```
 export PATH=$PATH:$HOME/go/bin
 export PATH=$PATH:/usr/local/go/bin
+```
+
+To generate proto
+
+```
+make generate-proto
 ```
 
 Now, Add `Environment Variables` by creating a new `.env` file in `root` folder and add the contents following `.env.example`
@@ -91,7 +107,6 @@ make compose-dev-down
 ```
 
 Now the server is running at `localhost:8000`
-
 
 Now, Lets build the `okane cli` app
 
