@@ -120,8 +120,6 @@ Now you can use the app
 ./okane_cli
 ```
 
-<br>
-
 # License
 
 <div align="center">
